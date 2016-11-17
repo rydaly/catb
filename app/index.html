@@ -1,0 +1,131 @@
+<!doctype html>
+<html class="no-js" lang="">
+  <head>
+    <meta charset="utf-8">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>catbp</title>
+
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <!-- Place favicon.ico in the root directory -->
+
+    <link href="https://fonts.googleapis.com/css?family=Raleway:100,300,400|Roboto+Mono" rel="stylesheet">
+
+    <!-- build:css styles/vendor.css -->
+    <!-- bower:css -->
+    <!-- endbower -->
+    <!-- endbuild -->
+
+    <!-- build:css styles/main.css -->
+    <link rel="stylesheet" href="styles/main.css">
+    <!-- endbuild -->
+
+    <!-- build:js scripts/vendor/modernizr.js -->
+    <script src="/bower_components/modernizr/modernizr.js"></script>
+    <!-- endbuild -->
+  </head>
+  <body>
+    <!--[if lt IE 10]>
+      <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+    <![endif]-->
+
+    <div class="modal">
+      <div class="modal-content">
+        <h1 class="modal-header"></h1>
+        <p class="modal-words"></p>
+        <button class="close">Dismiss</button>
+      </div>
+    </div>
+
+    <div class="main-logo-container">
+      <div class="menu-logo">
+        <span class="logo-bubble">STFU!</span>
+        <span class="logo-bubble2">STFU!</span>
+        <span class="logo-circ">
+          <span class="logo-text">Comments<br> are the<br> Best</span>
+        </span>
+        <span class="logo-circ2">
+        </span>
+      </div>
+    </div>
+
+    <div class="hero-unit">
+      <!-- <h1>Comments Are the Best</h1> -->
+      <!-- <span>a novelty project by <a href="http://rydaly.com" alt="rydaly.com" name="rydaly.com">Ryan Daly</a></span> -->
+    </div>
+
+    <div class="video-background">
+      <div class="video-foreground">
+        <div id="player"></div>
+      </div>
+    </div>
+
+    <div class="comments-overlay">
+      <div class="vid-title"></div>
+      <p class="comment"></p>
+    </div>
+
+    <div class="menu-toggle-btn"></div>
+    <menu class="menu">
+      <div class="menu-logo">
+        <span class="logo-bubble">STFU!</span>
+        <span class="logo-bubble2">STFU!</span>
+        <span class="logo-circ">
+          <span class="logo-text">Comments<br> are the<br> Best</span>
+        </span>
+        <span class="logo-circ2">
+        </span>
+      </div>
+
+      <div>
+        <form class="menu-search-form">
+          <label>Keyword Search • <small>returns the most relevant video for your query</small></label>
+          <input id="menu-manual-input" name="menu-manual-input">
+          <input type="submit" value="GO!">
+        </form>
+      </div>
+
+      <div>
+        <form class="menu-id-form">
+          <label>Manual ID • <small>returns video with matching id</small></label>
+          <input id="menu-id-input" name="menu-id-input">
+          <input type="submit" value="GO!">
+        </form>
+      </div>
+
+      <div>
+        <label>Category • <small>returns the current most popular video in category</small></label>
+        <ul class="category-select"></ul>
+      </div>
+
+      <div>
+        <label>About</label>
+        <p class="menu-about">CATB utilizes the YouTube API to grab the most popular video in a given category and play it along with commentary read using the Speech Synthesis API</p>
+      </div>
+
+    </menu>
+
+    <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
+    <script>
+      (function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+      function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+      e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+      e.src='https://www.google-analytics.com/analytics.js';
+      r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+      ga('create','UA-25348228-1');ga('send','pageview',location.pathname);
+    </script>
+
+    <script src="https://apis.google.com/js/api.js"></script>
+
+    <!-- build:js scripts/vendor.js -->
+    <!-- bower:js -->
+    <script src="/bower_components/jquery/dist/jquery.js"></script>
+    <script src="/bower_components/modernizr/modernizr.js"></script>
+    <!-- endbower -->
+    <!-- endbuild -->
+
+    <!-- build:js scripts/main.js -->
+    <script src="scripts/main.js"></script>
+    <!-- endbuild -->
+  </body>
+</html>
