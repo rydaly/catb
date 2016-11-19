@@ -1,16 +1,17 @@
 // bower:scss
 // endbower
-
 @import 'reset';
 @import 'mixins';
 @import 'logo';
-
 $base-bg-color: #0d1921;
 $base-font-color: #aec0ca;
+$break-small: 640px;
+$break-medium: 768px;
+$break-lrg: 1024px;
 
 .browserupgrade {
   margin: 0.2em 0;
-  background: rgba($base-font-color, 0.9);
+  background: rgba($base-font-color, 0.97);
   color: #333;
   padding: 0.2em 0;
 }
@@ -21,7 +22,8 @@ body {
   padding: 0;
 }
 
-body, p {
+body,
+p {
   font-family: 'Raleway', sans-serif;
   color: rgba($base-font-color, 0.8);
   font-weight: 300;
@@ -33,34 +35,40 @@ a {
   font-weight: 300;
   color: rgba($base-font-color, 0.7);
   cursor: pointer;
+  transition: color 0.2s;
+
+  &:hover {
+    color: rgba($base-font-color, 0.97);
+  }
 }
 
 input {
   font-family: 'Roboto Mono', monospace;
+  color: darken($base-font-color, 5%);
   width: 100%;
   padding: 12px 20px;
-  margin: 0 0 5px 0;
+  margin: 0 0 5px;
   box-sizing: border-box;
   border: none;
   outline: none;
-  background: rgba($base-font-color, 0.2);
+  background: lighten($base-bg-color, 5%);
   font-size: 1em;
   transition: background 0.2s;
 
   &:focus {
-    background: rgba($base-font-color, 0.4);
+    background: lighten($base-bg-color, 8%);
   }
 }
 
 input[type=submit] {
   padding: 10px;
-  background: rgba($base-font-color, 0.3);
+  background: lighten($base-bg-color, 5%);
   cursor: pointer;
   color: $base-font-color;
   transition: background 0.2s;
 
   &:hover {
-    background: rgba($base-font-color, 0.5);
+    background: lighten($base-bg-color, 8%);
   }
 }
 
@@ -79,28 +87,31 @@ small {
 }
 
 .modal {
-  display: flex;
+  // display: flex;
+  display: none;
   align-items: center;
   justify-content: center;
-  position: absolute;
-  width: 50%;
-  height: auto;
-  transform: translate(50%, 50%);
-
-  display: none;
+  width: 100%;
+  height: 100vh;
   z-index: 99;
-  background: rgba($base-font-color, 0.9);
   color: #333;
-  border-radius: 10px;
+  background: rgba($base-bg-color, 0.75);
+  overflow: hidden;
 
   p {
     color: #333;
   }
 }
+
 .modal-content {
   text-align: center;
-  padding: 50px;
+  max-width: 800px;
+  margin: 10px;
+  padding: 25px;
+  border-radius: 10px;
+  background: rgba($base-font-color, 0.97);
 }
+
 button.close {
   padding: 10px 25px;
   text-transform: uppercase;
@@ -109,12 +120,16 @@ button.close {
   background: rgba($base-bg-color, 0);
   cursor: pointer;
   margin-top: 50px;
-  outline:none;
+  outline: none;
 
   &:hover {
     background: rgba($base-bg-color, 0.1);
     transition: background 0.2s;
   }
+}
+
+#player {
+  display: none;
 }
 
 .video-background {
@@ -143,54 +158,20 @@ button.close {
 }
 
 iframe {
-  animation: pulse 20s infinite cubic-bezier(0.445, 0.05, 0.55, 0.95);
+  // animation: pulse 20s infinite cubic-bezier(0.445, 0.05, 0.55, 0.95);
   overflow: hidden;
 }
-
 @include keyframes(pulse) {
   0% {
     transform: scale(1.1);
   }
+
   50% {
     transform: scale(1.4);
   }
+
   100% {
     transform: scale(1.1);
-  }
-}
-
-.hero-unit {
-  position: absolute;
-  margin: 0 auto;
-  width: 100%;
-  font-size: 18px;
-  line-height: 30px;
-  margin: 0;
-  padding: 38px 25px 0;
-  text-align: left;
-  z-index: 8;
-  color: rgba($base-font-color, 0.6);
-
-  h1 {
-    font-family: 'Roboto Mono', monospace;
-    text-transform: uppercase;
-    font-size: 19px;
-    word-spacing: -5px;
-    line-height: 0;
-  }
-
-  span {
-    font-size: 12px;
-    font-weight: 100;
-    display: block;
-    line-height: 16px;
-  }
-
-  a {
-    color: rgba($base-font-color, 0.5);
-    font-size: 10px;
-    font-weight: 400;
-    text-transform: uppercase;
   }
 }
 
@@ -218,7 +199,6 @@ iframe {
   word-spacing: -10px;
   mix-blend-mode: color-dodge;
   opacity: 0.2;
-
 }
 
 .comment {
@@ -228,23 +208,30 @@ iframe {
   letter-spacing: 0.2px;
   font-weight: 300;
   padding: 10px;
+  margin-top: 125px;
   color: rgba($base-font-color, 0.7);
+  @media screen and (min-width: $break-medium) {
+    margin-top: 0;
+  }
 }
 
 .menu-toggle-btn {
   position: absolute;
-  top: 25px;
-  right: 25px;
+  top: 15px;
+  right: 15px;
+  padding: 10px;
+  background: rgba($base-bg-color, 0.95);
+  border-radius: 5px;
   cursor: pointer;
   z-index: 9;
 
   &:before {
-    content: 'MENU'
+    content: 'MENU';
   }
 
   &.menu-open {
     &:before {
-      content: 'CLOSE'
+      content: 'CLOSE';
     }
   }
 }
@@ -258,7 +245,7 @@ iframe {
   right: 0;
   margin: 0;
   padding: 25px;
-  background: rgba($base-bg-color, 0.95);
+  background: rgba($base-bg-color, 0.97);
   border-left: 1px solid rgba($base-bg-color, 1);
   box-shadow: -4px 0 10px $base-bg-color;
   z-index: 8;
@@ -270,26 +257,68 @@ iframe {
     margin: 0 auto;
   }
 }
-  .category-select {
-    list-style-type: none;
+$cat-border-color: rgba($base-font-color, 0.1);
+
+.category-select {
+  list-style-type: none;
+  width: 100%;
+  min-height: 120px;
+  margin: 0;
+  padding: 0;
+
+  li {
     width: 100%;
-    min-height: 120px;
-    margin: 0; padding: 0;
+    display: inline-block;
+    text-align: center;
+    padding: 15px 10px;
+    border-bottom: 1px solid $cat-border-color;
+    cursor: pointer;
 
-    li {
-      width: 33.3%;
-      float: left;
+    &:hover {
+      background: lighten($base-bg-color, 5%);
+    }
 
-      a {
-        transition: color 0.2s;
+    &:first-child {
+      border-top: 1px solid $cat-border-color;
+    }
+    @media screen and (min-width: $break-medium) {
+      width: 50%;
+
+      &:nth-child(1),
+      &:nth-child(2) {
+        border-top: 1px solid $cat-border-color;
       }
-      a:hover {
-        color: rgba($base-font-color, 0.9);
+
+      &:nth-child(odd) {
+        border-right: 1px solid $cat-border-color;
+      }
+    }
+    @media screen and (min-width: $break-lrg) {
+      width: 33.3%;
+
+      &:nth-child(3) {
+        border-top: 1px solid $cat-border-color;
+      }
+
+      &:nth-child(3n+1),
+      &:nth-child(3n+2) {
+        border-right: 1px solid $cat-border-color;
+      }
+
+      &:nth-child(3n+3) {
+        border-right: none;
       }
     }
   }
+}
 
-  .menu-about {
-    // position: absolute;
-    // bottom: 0;
+.menu-about {
+  a {
+    border-bottom: 1px solid rgba($base-font-color, 0.5);
+    transition: border-color 0.2s;
+
+    &:hover {
+      border-bottom-color: rgba($base-font-color, 0.97);
+    }
   }
+}

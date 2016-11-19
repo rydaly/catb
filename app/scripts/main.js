@@ -4,6 +4,8 @@
 // TODO :: check for comments disabled and move to next if so
 //      :: option to skip to next comment
 //      :: if comment has a link, skip it
+//      :: media queries
+//      :: re-write this code, it's garbage! And this is what happens when you don't plan and add features as you go, kids. 
 
 
 var app = {
@@ -19,16 +21,21 @@ var app = {
   currentThumb: '',
   currentComments: [],
   utterances: [],
+  modalObj: {},
   inc: 0,
-  isMobile: true
+  isMobile: true,
+  hasSpeechSynth: false
 };
 
-var readNextTimeout;
+var readNextTimeout = null;
 
 $(document).ready(function() {
   app.isMobile = jQuery.browser.mobile;
+  app.hasSpeechSynth = 'speechSynthesis' in window;
+  // app.isMobile = false;
+  // app.hasSpeechSynth = false;
 
-  if ('speechSynthesis' in window) {
+  if (app.hasSpeechSynth) {
     window.speechSynthesis.onvoiceschanged = function() {
       // filter for english voices
       var allVoices = window.speechSynthesis.getVoices();
@@ -42,15 +49,29 @@ $(document).ready(function() {
       }
     };
   } else {
-    // TODO :: show error
+    if (app.isMobile) {
+      app.modalObj = {
+        header: 'Wha-Oh!',
+        words: 'Support for the speech sythesis is spotty on mobile devices. Try using a more modern browser or come back on your desktop. Feel free to continue, but you won\'t be getting a complete experience.'
+      };
+    } else {
+      app.modalObj = {
+        header: 'Wha-Oh!',
+        words: 'Looks like your browser doesn\'t support speech synthesis. Time for an upgrade! Feel free to continue, but you\'ll basically just be seeing a video player!'
+      };
+    }
+
+    toggleModal(app.modalObj);
   }
 
-  gapi.load('client', doBaseQuery);
-
+  // load up the iframe api
   var tag = document.createElement('script');
   tag.src = 'https://www.youtube.com/iframe_api';
   var firstScriptTag = document.getElementsByTagName('script')[0];
   firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+  // query api
+  gapi.load('client', initYouTubeApi);
 });
 
 function getVideoById(ytid) {
@@ -60,10 +81,10 @@ function getVideoById(ytid) {
 
 function doMainQuery(queryType) {
   var req;
-  // clear speech on load
-  if ('speechSynthesis' in window) {
-    speechSynthesis.cancel();
-  }
+
+  console.log(app.currentComments);
+  resetReadback();
+  console.log(app.currentComments);
 
   switch (queryType) {
     case 'search':
@@ -100,8 +121,6 @@ function doMainQuery(queryType) {
 
       setVideoDetails();
 
-      initVideoPlayer(app.currentVid);
-
       // get comments for vid
       return gapi.client.request({
         'path': 'https://www.googleapis.com/youtube/v3/commentThreads?part=snippet,replies&order=relevance&textFormat=plainText&videoId=' + app.currentVid
@@ -117,21 +136,17 @@ function doMainQuery(queryType) {
         '&regionCode=' + app.queryOptions.regionCode +
         '&id=' + app.currentVid
     }).then(function(response) {
-      // console.log('id query response  :: ', response.result.items[0].snippet.thumbnails.high);
-      // console.log(response.result.items[0] === undefined);
-      if(response.result.items[0] === undefined) {
-        var modalObj = {
+      if (response.result.items[0] === undefined) {
+        app.modalObj = {
           header: 'Wha-Oh!',
           words: 'Looks like that YouTube ID didn\'t match anything. Check the ID and try again!'
         };
-        toggleModal(modalObj);
+        toggleModal(app.modalObj);
       } else {
         app.currentTitle = response.result.items[0].snippet.title;
         app.currentThumb = response.result.items[0].snippet.thumbnails.high.url;
         setVideoDetails();
       }
-
-      initVideoPlayer(app.currentVid);
 
       // get comments for vid
       return gapi.client.request({
@@ -152,27 +167,24 @@ function doMainQuery(queryType) {
     }).then(function(response) {
       // console.log('current vid  :: ', response.result.items.length);
       if (response.result.items.length === 0) {
-        var modalObj = {
+        app.modalObj = {
           header: 'Wha-Oh!',
           words: 'Looks like that query returned an empty set. Try something else!'
         };
-        toggleModal(modalObj);
+        toggleModal(app.modalObj);
+        resetReadback();
+      } else {
+        app.currentTitle = response.result.items[0].snippet.title;
+        app.currentThumb = response.result.items[0].snippet.thumbnails.high.url;
+        app.currentVid = response.result.items[0].id;
+        setVideoDetails();
       }
-
-      app.currentTitle = response.result.items[0].snippet.title;
-      app.currentThumb = response.result.items[0].snippet.thumbnails.high.url;
-
-      setVideoDetails();
-
-      // console.log('current category  :: ', app.queryOptions.categoryId);
-      app.currentVid = response.result.items[0].id;
-
-      initVideoPlayer(app.currentVid);
 
       // get comments for vid
       return gapi.client.request({
         'path': 'https://www.googleapis.com/youtube/v3/commentThreads?part=snippet,replies&order=relevance&textFormat=plainText&videoId=' + app.currentVid
       })
+
     }, function(error) {
       console.log('ERROR :: ', error);
     })
@@ -180,9 +192,7 @@ function doMainQuery(queryType) {
 
   return req.then(function(response) {
     var topComments = response.result.items;
-    // console.log(topComments);
-    // topCommentContent = topComment.snippet.topLevelComment.snippet.textDisplay,
-    // topCommentReplies = topComment.replies.comments;
+
     // empty current comments
     app.currentComments = [];
 
@@ -200,15 +210,15 @@ function doMainQuery(queryType) {
       }
     }
 
-    // start playback after 5 seconds
-    // delayReadbackTimeout = setTimeout(function() {
-    //   initTextToSpeech(app.currentComments);
-    // }, 5000);
+    initVideoPlayer(app.currentVid);
+    if (app.hasSpeechSynth) {
+      initTextToSpeech(app.currentComments)
+    };
 
   })
 }
 
-function doBaseQuery() {
+function initYouTubeApi() {
   // init library
   gapi.client.init({
     'apiKey': 'AIzaSyClXp7mtJlsoJZASUbnugAykmUD8ww_v0c'
@@ -232,7 +242,8 @@ function doBaseQuery() {
         if (i === catsData.length - 1) handleDomTasks();
       }
     });
-    // query youtube api
+
+    // set default video here
     return doMainQuery('id');
 
   }, function(error) {
@@ -250,8 +261,6 @@ function onYouTubeIframeAPIReady() {
 }
 
 function initVideoPlayer(currentVid) {
-  // console.log(app.player);
-
   if (!app.player) {
     app.player = new YT.Player('player', {
       width: '1280',
@@ -264,6 +273,7 @@ function initVideoPlayer(currentVid) {
         'fs': 0,
         'loop': 1,
         'modestbranding': 1,
+        'playsinline': 1,
         'showinfo': 0,
         'showsearch': 0
       },
@@ -274,29 +284,34 @@ function initVideoPlayer(currentVid) {
       }
     });
   } else {
-    // TODO :: move this to a reset method
-    clearTimeout(readNextTimeout);
-    // clearTimeout(delayReadbackTimeout);
-    speechSynthesis.cancel();
-    app.inc = 0;
     app.player.loadVideoById(currentVid);
   }
 }
 
-function onPlayerReady(event) {
+function resetReadback() {
+  clearTimeout(readNextTimeout);
+  readNextTimeout = null;
+  if (app.hasSpeechSynth) speechSynthesis.cancel();
+  app.inc = 0;
+}
 
-  if(!app.isMobile) {
+function onPlayerReady(event) {
+  if (app.isMobile) {
+    $('#player').fadeIn('fast');
+  } else {
     event.target.playVideo(); // auto play when not mobile
   }
   event.target.setVolume(15);
 }
 
 function onPlayerStateChange(event) {
+  var playerDiv = $('#player');
+
   if (event.data === YT.PlayerState.ENDED) {
     event.target.playVideo(); // loop video
   } else if (event.data === YT.PlayerState.PLAYING) {
-    $('.comments-overlay').css('display', 'flex');
-    initTextToSpeech(app.currentComments);
+    commentsOverlay.css('display', 'flex');
+    playerDiv.fadeIn('fast');
   }
 }
 
@@ -312,60 +327,51 @@ function onPlayerError(event) {
 var commentDiv = $('.comment');
 
 function initTextToSpeech(currentComments) {
-  // console.log(app.currentComments);
-  if ('speechSynthesis' in window) {
-    function readNextComment() {
-      // console.log('READ NEXT !!!!!!!!!!!!!!');
-      if (app.inc < currentComments.length) {
-        // set display text
-        commentDiv.html(currentComments[app.inc]);
-        commentDiv.fadeIn('fast');
 
-        app.utterances = [];
-        var text = currentComments[app.inc],
-          msg = new SpeechSynthesisUtterance(text);
-        app.utterances.push(msg); // saving to array prevents onend event from not firing sometimes
+  function readNextComment() {
+    if (app.inc < currentComments.length) {
+      // set display text
+      commentDiv.html(currentComments[app.inc]);
+      commentDiv.fadeIn('fast');
 
-        msg.rate = randomRange(1, 1.2);
-        msg.pitch = randomRange(1, 1.5);
-        msg.voice = app.voices[Math.floor(Math.random() * app.voices.length)];
-        speechSynthesis.speak(msg);
+      app.utterances = [];
+      var text = currentComments[app.inc],
+        msg = new SpeechSynthesisUtterance(text);
+      app.utterances.push(msg); // saving to array prevents onend event from not firing sometimes
 
-        msg.onend = function(e) {
-          console.log('Finished in ' + e.elapsedTime + ' seconds.');
-          commentDiv.fadeOut('fast');
+      msg.rate = randomRange(1, 1.2);
+      msg.pitch = randomRange(1, 1.5);
+      msg.voice = app.voices[Math.floor(Math.random() * app.voices.length)];
+      speechSynthesis.speak(msg);
 
-          app.inc++;
-          while (!engTest(currentComments[app.inc])) app.inc++; // skip over non-english comments (sorry for now world)
+      msg.onend = function(e) {
+        console.log('Finished in ' + e.elapsedTime + ' seconds.');
+        commentDiv.fadeOut('fast');
 
-          readNextTimeout = setTimeout(function() {
-            readNextComment();
-          }, 1500);
-        };
+        app.inc++;
+        while (!commentFilter(currentComments[app.inc])) app.inc++; // skip over non-english comments (sorry for now world) and comments with links
 
-        msg.onerror = function(e) {
-          console.log('Error in speech ');
-          app.inc++;
+        readNextTimeout = setTimeout(function() {
           readNextComment();
-        }
+        }, 1500);
+      };
 
-      } else {
-        // done reading comments
-        // TODO :: advance to another vidoe here?
+      msg.onerror = function(e) {
+        console.log('Error in speech ');
+        app.inc++;
+        readNextComment();
       }
 
-
+    } else {
+      // done reading comments
+      // TODO :: advance to another video here?
     }
 
-    readNextComment();
-  } else {
-    var modalObj = {
-      header: 'Wha-Oh!',
-      words: 'Looks like your browser doesn\'t support speech synthesis. Time for an upgrade!'
-    };
-
-    toggleModal(modalObj);
   }
+
+  resetReadback();
+  readNextComment();
+
 }
 
 
@@ -387,7 +393,6 @@ function handleDomTasks() {
   };
 
   $.each(app.categories, function() {
-    // console.log(this);
     menu.append(getMenuItem(this));
   });
 
@@ -438,6 +443,7 @@ function handleDomListeners() {
 var modalDiv = $('.modal');
 var modalHeader = $('.modal-header');
 var modalContent = $('.modal-words');
+var commentsOverlay = $('.comments-overlay');
 
 function toggleModal(content = null) {
   // console.log('modal content :: ', content);
@@ -445,16 +451,28 @@ function toggleModal(content = null) {
     modalHeader.text(content.header);
     modalContent.text(content.words);
   }
-  modalDiv.toggle();
+
+  console.log(modalDiv.css('display'));
+  if (modalDiv.css('display') === 'none') {
+    modalDiv.css({
+      'display': 'flex',
+      'z-index': 9
+    });
+    commentsOverlay.css('z-index', '-1');
+  } else {
+    modalDiv.css({
+      'display': 'none',
+      'z-index': -1
+    });
+    commentsOverlay.css('z-index', '1');
+  }
 }
 
 var vidTitle = $('.vid-title');
 var vidForeground = $('.video-foreground');
 
 function setVideoDetails() {
-  // console.log('set deets', vidTitle);
   vidTitle.text(app.currentTitle);
-  // vidForeground.css('background-image', 'url(' + app.currentThumb + ')');
 }
 
 // UTILITIES
@@ -483,11 +501,26 @@ function randomRange(min, max) {
   return Math.random() * (max - min) + min;
 }
 
-function engTest(input) {
+function commentFilter(input) {
+  if (input === undefined) return;
+
   var firstWord = input.split(' ')[0];
   var english = /^[A-Za-z0-9]*$/;
+  var urlCheck = new RegExp('([a-zA-Z0-9]+://)?([a-zA-Z0-9_]+:[a-zA-Z0-9_]+@)?([a-zA-Z0-9.-]+\\.[A-Za-z]{2,4})(:[0-9]+)?(/.*)?');
 
-  return firstWord.match(english) ? true : false;
+  if (firstWord.match(english)) {
+    if (urlCheck.test(input)) {
+      console.log('WE HAVE A LINK');
+      return false;
+    } else {
+      console.log('NO LINK HERE');
+      return true;
+    }
+  } else {
+    return false;
+  }
+
+  // return firstWord.match(english) ? true : false;
 }
 
 /**
@@ -496,4 +529,6 @@ function engTest(input) {
  * jQuery.browser.mobile will be true if the browser is a mobile device
  *
  **/
-(function(a){(jQuery.browser=jQuery.browser||{}).mobile=/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino/i.test(a)||/1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(a.substr(0,4))})(navigator.userAgent||navigator.vendor||window.opera);
+(function(a) {
+  (jQuery.browser = jQuery.browser || {}).mobile = /(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino/i.test(a) || /1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(a.substr(0, 4))
+})(navigator.userAgent || navigator.vendor || window.opera);

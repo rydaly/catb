@@ -1,33 +1,33 @@
 $logo-bubble-height: 20px;
 $logo-font-size: 10px;
 $highlight-color: darken(#E2C044, 15%);
-
 $base-bg-color: #0d1921;
 $base-font-color: #aec0ca;
-
 @function makelongshadow($color) {
-  $val: 0px 0px $color;
+  $val: 0 0 $color;
   @for $i from 1 through 2 {
     $val: #{$val}, #{$i}px #{$i}px #{$color};
   }
   @return $val;
 }
-
 @mixin longshadow($color) {
   text-shadow: makelongshadow($color);
 }
 
 .main-logo-container {
   position: absolute;
-  top: 0; left: 0;
-  margin: 0 auto;
+  top: 0;
+  left: 0;
+  padding: 15px 10px 10px;
+  background: rgba($base-bg-color, 0.95);
+  border-radius: 5px;
   z-index: 8;
-  margin: 15px 25px;
+  margin: 15px;
 }
 
 .menu-logo {
   position: relative;
-  top: 12px;
+  // top: 12px;
   height: $logo-bubble-height*4;
   text-align: center;
 }
