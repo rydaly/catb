@@ -9,10 +9,11 @@
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
     <!-- Place favicon.ico in the root directory -->
 
-    <link href="https://fonts.googleapis.com/css?family=Raleway:100,300,400|Roboto+Mono" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Raleway:100,300,400,700|Roboto+Mono" rel="stylesheet">
 
     <!-- build:css styles/vendor.css -->
     <!-- bower:css -->
+    <link rel="stylesheet" href="/bower_components/components-font-awesome/css/font-awesome.css" />
     <!-- endbower -->
     <!-- endbuild -->
 
@@ -47,8 +48,24 @@
     </div>
 
     <div class="comments-overlay">
-      <div class="vid-title"></div>
-      <p class="comment"></p>
+      <div class="vid-details">
+        <div class="vid-title"></div>
+      </div>
+
+      <div class="comment">
+        <img class="comment-avatar" src="">
+        <div class="speech-bubble top">
+          <div class="comment-is-reply">
+            <div class="comment-reply-arrow"></div>
+          </div>
+          <div class="comment-details">
+            <p class="comment-username"></p>
+            <p class="comment-in-reply-to"></p>
+            <p class="comment-content"></p>
+            <p class="comment-likes"></p>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="menu-toggle-btn"></div>
@@ -65,11 +82,21 @@
       </div>
 
       <div>
-        <form class="menu-search-form">
+        <form class="menu-video-search-form">
           <label>Keyword Search •
             <small>returns the most relevant video for your query</small>
           </label>
-          <input id="menu-manual-input" name="menu-manual-input">
+          <input id="menu-video-search" name="menu-video-search">
+          <input type="submit" value="GO!">
+        </form>
+      </div>
+
+      <div>
+        <form class="menu-channel-search-form">
+          <label>Channel Search •
+            <small>returns the most relevant channel's latest video</small>
+          </label>
+          <input id="menu-channel-search" name="menu-channel-search">
           <input type="submit" value="GO!">
         </form>
       </div>
@@ -140,6 +167,12 @@
 
     <!-- build:js scripts/main.js -->
     <script src="scripts/main.js"></script>
+    <script src="scripts/components/Catb.js"></script>
+    <script src="scripts/components/CatbUtil.js"></script>
+    <script src="scripts/components/Router.js"></script>
+    <script src="scripts/components/SpeechSynth.js"></script>
+    <script src="scripts/components/YouTubeData.js"></script>
+    <script src="scripts/components/YouTubePlayer.js"></script>
     <!-- endbuild -->
   </body>
 </html>

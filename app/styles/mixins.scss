@@ -1,31 +1,187 @@
 @mixin animation($animate...) {
   $max: length($animate);
   $animations: '';
-
   @for $i from 1 through $max {
-      $animations: #{$animations + nth($animate, $i)};
-
-      @if $i < $max {
-          $animations: #{$animations + ", "};
-      }
+    $animations: #{$animations + nth($animate, $i)};
+    @if $i < $max {
+      $animations: #{$animations + ", "};
+    }
   }
   -webkit-animation: $animations;
-  -moz-animation:    $animations;
-  -o-animation:      $animations;
-  animation:         $animations;
+  -moz-animation: $animations;
+  -o-animation: $animations;
+  animation: $animations;
 }
-
 @mixin keyframes($animationName) {
-  @-webkit-keyframes #{$animationName} {
-      @content;
+   @-webkit-keyframes #{$animationName}{
+    @content;
   }
   @-moz-keyframes #{$animationName} {
-      @content;
+     @content;
   }
   @-o-keyframes #{$animationName} {
-      @content;
+     @content;
   }
   @keyframes #{$animationName} {
-      @content;
+     @content;
+  }
+}
+/*
+  COMMENT BUBBLES
+ */
+$bubble-text: #0d1921;
+$bubble-bg: rgba(#aec0ca, 0.8);
+$bubble-border: $bubble-text;
+@mixin speech-bubble($side: left, $offset-direction: top) {
+  $offset: 16px;
+  $size: 8px;
+  $border-color: $bubble-border;
+  $border-width: 2;
+  border: 1px solid $border-color;
+  border-radius: 6px;
+  position: relative;
+  margin-#{$side}: $size + ($border-width / 2);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+  margin-#{opposite-direction($side)}: 4px;
+  margin-bottom: 4px;
+  padding: 1ex 1em;
+  background: $bubble-bg;
+
+  &:after,
+  &:before {
+    content: "";
+    display: block;
+    position: absolute;
+  }
+
+  &:after {
+    #{$offset-direction}: $offset;
+  }
+
+  &:before {
+    #{$offset-direction}: $offset - $border-width;
+  }
+
+  &:after {
+    border: $size solid transparent;
+    border-#{opposite-direction($side)}: $size solid $bubble-bg;
+    #{$side}: -$size;
+    border-#{$side}: none;
+  }
+
+  &:before {
+    border: ($size + $border-width) solid transparent;
+    border-#{opposite-direction($side)}: ($size + $border-width) solid $border-color;
+    #{$side}: -($size + $border-width);
+    border-#{$side}: none;
+  }
+}
+@function opposite-direction($direction) {
+  $opposite-direction: center;
+  @if $direction == top {
+    $opposite-direction: bottom;
+  }
+  @if $direction == bottom {
+    $opposite-direction: top;
+  }
+  @if $direction == left {
+    $opposite-direction: right;
+  }
+  @if $direction == right {
+    $opposite-direction: left;
+  }
+  @return $opposite-direction;
+}
+
+.comment {
+  display: inline-block;
+  margin: 2ex 1em;
+
+  .comment-details {
+    padding: 5px 0;
+
+    &.is-reply {
+      padding-left: 35px;
+    }
+  }
+
+  .comment-avatar {
+    border-radius: 50%;
+    border: 1px solid $bubble-border;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    float: left;
+    margin-right: 0.5em;
+  }
+
+  .speech-bubble {
+    float: left;
+    max-width: 1000px;
+
+    &.left {
+      @include speech-bubble;
+    }
+
+    &.top {
+      @include speech-bubble(top, left);
+      clear: both;
+      margin-left: 0;
+      margin-top: 1em;
+    }
+
+    .comment-content {
+      color: $bubble-text;
+      font-weight: 400;
+      margin: 10px 0;
+    }
+
+    .comment-in-reply-to,
+    .comment-likes,
+    .comment-username {
+      font-weight: 700;
+      color: lighten($bubble-text, 10%);
+      line-height: 1.3em;
+      margin: 0;
+      font-size: 0.9em;
+    }
+
+    .comment-in-reply-to {
+      font-size: 0.7em;
+
+      span {
+        font-weight: 400;
+      }
+    }
+
+    .comment-likes {
+      &:before {
+        font-family: FontAwesome;
+        content: '\f164';
+        margin-right: 5px;
+        color: lighten($bubble-text, 10%);
+      }
+      font-weight: 400;
+      color: lighten($bubble-text, 10%);
+      vertical-align: middle;
+    }
+  }
+
+  .comment-is-reply {
+    position: absolute;
+    top: 50%;
+    left: 25px;
+    transform: translate(0, -50%) scale(1.8);
+    opacity: 0.5;
+  }
+
+  .comment-reply-arrow {
+    &:before {
+      content: '\f112';
+      font-family: FontAwesome;
+      color: lighten($bubble-bg, 10%);
+    }
+    -webkit-transform: rotate(-180deg) translateX(4px);
+    -moz-transform: rotate(-180deg) translateX(4px);
+    -ms-transform: rotate(-180deg) translateX(4px);
+    -o-transform: rotate(-180deg) translateX(4px);
   }
 }
