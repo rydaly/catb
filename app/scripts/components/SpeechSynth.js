@@ -22,6 +22,7 @@ var SpeechSynth = (function() {
   var commentReplyToDiv = $('.comment-in-reply-to');
   var commentLikesDiv = $('.comment-likes');
   var readNextTimeout = null;
+  var fadeOutTimeout = null;
   var voices = [];
   var inc = 0;
 
@@ -81,7 +82,10 @@ var SpeechSynth = (function() {
   var cancelReadback = function() {
     window.speechSynthesis.cancel();
     clearTimeout(readNextTimeout);
+    clearTimeout(fadeOutTimeout);
     readNextTimeout = null;
+    fadeOutTimeout = null;
+
     inc = 0;
   };
 
@@ -99,8 +103,7 @@ var SpeechSynth = (function() {
         inReplyTo = catbSettings.currentComments[inc].inReplyTo,
         likeCount = catbSettings.currentComments[inc].likeCount,
         likeText = likeCount === 1 ? ' like' : ' likes',
-        // readNextDelay = catbSettings.currentComments[inc].text.length < 50 ? 2000 : 0,
-        readNextDelay = 1000, // maybe omit short comments instead of working out this delay?
+        fadeOutDelay = 2000,
         msg = new SpeechSynthesisUtterance(text);
 
       utterances.push(msg); // saving to array prevents onend event from not firing sometimes
@@ -124,7 +127,7 @@ var SpeechSynth = (function() {
         commentReplyToDiv.hide();
       }
 
-      commentDiv.fadeIn('fast');
+      commentDiv.removeClass('hide').addClass('show');
 
       // long msgs fail in non-default voices, so set to default if over 200
       msg.voice = msg.text.length > 200 ? catbSettings.defaultVoice : voices[Math.floor(Math.random() * voices.length)];
@@ -142,7 +145,10 @@ var SpeechSynth = (function() {
         // console.log('Finished :: ', inc + ' of ' + catbSettings.currentComments.length);
         // console.log('comment length :: ', catbSettings.currentComments[inc].text.length);
 
-        commentDiv.delay(readNextDelay).fadeOut('fast');
+        // commentDiv.delay(fadeOutDelay).addClass('hide').removeClass('show');
+        fadeOutTimeout = setTimeout(function() {
+          commentDiv.addClass('hide').removeClass('show');
+        }, fadeOutDelay);
 
         inc++;
 
@@ -153,9 +159,10 @@ var SpeechSynth = (function() {
         //   inc++
         // };
 
+        // TODO :: this timeout probably needs to be cleared
         readNextTimeout = setTimeout(function() {
           _readNextComment();
-        }, readNextDelay + 1500);
+        }, fadeOutDelay + 1500);
       };
 
       msg.onerror = function(e) {
@@ -165,8 +172,9 @@ var SpeechSynth = (function() {
       }
 
     } else {
-      // done reading comments
       console.log('DONE READING COMMENTS');
+      commentDiv.addClass('hide').removeClass('show');
+      Playlist.nextVid();
       // TODO :: advance to another video here?
     }
   };

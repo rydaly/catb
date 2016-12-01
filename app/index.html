@@ -50,9 +50,15 @@
     <div class="comments-overlay">
       <div class="vid-details">
         <div class="vid-title"></div>
+        <div class="vid-uploader"></div>
+        <div class="vid-stats">
+          <span class="vid-stats-views"></span> |
+          <span class="vid-stats-likes"></span>
+          <span class="vid-stats-dislikes"></span>
+        </div>
       </div>
 
-      <div class="comment">
+      <div class="comment hide">
         <img class="comment-avatar" src="">
         <div class="speech-bubble top">
           <div class="comment-is-reply">
@@ -135,7 +141,7 @@
       <div class="modal-content">
         <h1 class="modal-header"></h1>
         <p class="modal-words"></p>
-        <button class="close">Dismiss</button>
+        <button class="close">Onward</button>
       </div>
     </div>
 
@@ -169,10 +175,11 @@
     <script src="scripts/main.js"></script>
     <script src="scripts/components/Catb.js"></script>
     <script src="scripts/components/CatbUtil.js"></script>
+    <script src="scripts/components/Playlist.js"></script>
     <script src="scripts/components/Router.js"></script>
+    <script src="scripts/components/YouTubePlayer.js"></script>
     <script src="scripts/components/SpeechSynth.js"></script>
     <script src="scripts/components/YouTubeData.js"></script>
-    <script src="scripts/components/YouTubePlayer.js"></script>
     <!-- endbuild -->
   </body>
 </html>

@@ -44,7 +44,7 @@ $bubble-border: $bubble-text;
   box-shadow: 0 2px 4px rgba(0,0,0,0.04);
   margin-#{opposite-direction($side)}: 4px;
   margin-bottom: 4px;
-  padding: 1ex 1em;
+  padding: 1em;
   background: $bubble-bg;
 
   &:after,
@@ -95,11 +95,9 @@ $bubble-border: $bubble-text;
 
 .comment {
   display: inline-block;
-  margin: 2ex 1em;
+  margin: 1em;
 
   .comment-details {
-    padding: 5px 0;
-
     &.is-reply {
       padding-left: 35px;
     }

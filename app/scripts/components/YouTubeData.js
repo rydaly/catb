@@ -8,6 +8,10 @@
 var YouTubeData = (function() {
 
   var vidTitleDiv = $('.vid-title');
+  var vidUploaderDiv = $('.vid-uploader');
+  var vidViewsDiv = $('.vid-stats-views');
+  var vidLikesDiv = $('.vid-stats-likes');
+  var vidDislikesDiv = $('.vid-stats-dislikes');
 
   var init = function() {
     // console.log('init youtube DATA', window.gapi.client);
@@ -52,19 +56,24 @@ var YouTubeData = (function() {
 
   var doMainQuery = function(queryType) { // TODO :: change name of this method
 
-    console.log('MAIN QUERY, current vid :: ', catbSettings.currentVid);
+    // console.log('MAIN QUERY, current vid :: ', catbSettings.currentVid);
     var modalObj;
     var commentsReadyEvent = new CustomEvent('commentsReady', {
       'detail': catbSettings.currentVid
     });
 
-    SpeechSynth.cancelReadback(); // TODO
+    // reset a couple things
+    SpeechSynth.cancelReadback(); // TODO?
 
-    console.log('in switch :: ', queryType);
+    // console.log('in switch :: ', queryType);
     switch (queryType) {
       case 'search':
         _doSearchQuery().then(function(results) {
-          postQuerySetup(results);
+          Playlist.setCurrent(results.result.items);
+          catbSettings.currentVid = Playlist.getCurrent()[0].id.videoId;
+          _doIdQuery().then(function(results) {
+            postQuerySetup(results);
+          });
         });
         modalObj = {
           header: 'Wha-Oh!',
@@ -73,6 +82,7 @@ var YouTubeData = (function() {
         break;
       case 'id':
         _doIdQuery().then(function(results) {
+          // console.log('ID RESULTS :: ', results);
           postQuerySetup(results);
         });
         modalObj = {
@@ -82,6 +92,11 @@ var YouTubeData = (function() {
         break;
       case 'category':
         _doCatQuery().then(function(results) {
+          // console.log('CATEGORY RESULTS :: ', results.result.items.length);
+          if(results.result.items.length) {
+            Playlist.setCurrent(results.result.items);
+            catbSettings.currentVid = Playlist.getCurrent()[0].id.videoId;
+          }
           postQuerySetup(results);
         });
         modalObj = {
@@ -93,7 +108,11 @@ var YouTubeData = (function() {
         _doChannelSearchQuery().then(function(results) {
           var topHitChannelId = results.result.items[0].id.channelId;
           _doChannelQuery(topHitChannelId).then(function(results) {
-            postQuerySetup(results);
+            Playlist.setCurrent(results.result.items);
+            catbSettings.currentVid = Playlist.getCurrent()[0].id.videoId;
+            _doIdQuery().then(function(results) {
+              postQuerySetup(results);
+            });
           });
         });
         modalObj = {
@@ -105,29 +124,52 @@ var YouTubeData = (function() {
 
     function postQuerySetup(response) {
       // console.log('doMainQuery response for ' + queryType + ' query :: ', response);
+      var videoData = response.result.items[0],
+        videoSnippet = videoData ? videoData.snippet : null,
+        videoStats = videoData ? videoData.statistics : null;
 
-      if (response.result.items.length === 0) {
+      // TODO ::
+
+      if (!videoData) {
         Catb.toggleModal(modalObj);
         SpeechSynth.cancelReadback();
-        // YouTubePlayer.stopVideo();
         return;
       } else {
+        console.log('EMBEDDABLE :: ', videoData.status.embeddable);
+        console.log('PRIVACY :: ', videoData.status.privacyStatus);
 
-        // shared properties for query types
-        catbSettings.currentTitle = response.result.items[0].snippet.title;
-        catbSettings.currentThumb = response.result.items[0].snippet.thumbnails.high.url;
-        vidTitleDiv.text(catbSettings.currentTitle);
+        // TODO :: if not embeddable, move on ( next in playlist or modal )
+        if(videoData.status.embeddable && videoData.status.privacyStatus === 'public') {
+
+        } else {
+          // TODO :: move below if statment elsewhere. It's used in multiple places
+          if(Playlist.getCurrent().length) {
+            Playlist.nextVid();
+          } else {
+            Catb.toggleModal({
+              header: 'Wha-Oh!',
+              words: 'That video is not public or the owner has disabled embedding. LAME. Go ahead and try something else!'
+            });
+          }
+          return;
+        }
+
+        // set video details
+        vidTitleDiv.html(videoSnippet.title);
+        vidUploaderDiv.html('Uploaded by <span>' + videoSnippet.channelTitle + '</span>');
+        vidViewsDiv.html(videoStats.viewCount + ' Views');
+        vidLikesDiv.html('<i class="fa fa-thumbs-up" aria-hidden="true"></i> ' + videoStats.likeCount);
+        vidDislikesDiv.html('<i class="fa fa-thumbs-down" aria-hidden="true"></i> ' + videoStats.dislikeCount);
 
         // handle individual properties for query types
         switch (queryType) {
           case 'search':
           case 'channel':
-            catbSettings.currentVid = response.result.items[0].id.videoId;
             catbSettings.queryOptions.categoryId = null;
             break;
           case 'id':
           case 'category':
-            catbSettings.currentVid = response.result.items[0].id;
+            catbSettings.currentVid = videoData.id;
             break;
         }
 
@@ -154,9 +196,10 @@ var YouTubeData = (function() {
   };
 
   var _doIdQuery = function() {
-    // console.log('doing id query :: ', app.currentVid);
+    console.log('CURRENT VID :: ', catbSettings.currentVid);
+    // TODO :: if currentPlaylist was set elsewhere, don't set. otherwise set based on
     return gapi.client.request({
-      'path': 'https://www.googleapis.com/youtube/v3/videos?part=snippet' +
+      'path': 'https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics,status' +
         '&regionCode=' + catbSettings.queryOptions.regionCode +
         '&id=' + catbSettings.currentVid
     });
@@ -164,7 +207,7 @@ var YouTubeData = (function() {
 
   var _doCatQuery = function() {
     return gapi.client.request({
-      'path': 'https://www.googleapis.com/youtube/v3/videos?part=snippet' +
+      'path': 'https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics,status' +
         '&regionCode=' + catbSettings.queryOptions.regionCode +
         '&videoCategoryId=' + catbSettings.queryOptions.categoryId +
         '&maxResults=' + catbSettings.queryOptions.maxResults +
@@ -173,7 +216,6 @@ var YouTubeData = (function() {
   };
 
   var _doChannelSearchQuery = function(searchTerm = '') {
-    // var term = 'breitbart'; // TODO
     var term = (searchTerm !== '') ? searchTerm : document.getElementById('menu-channel-search').value;
     return gapi.client.request({
       'path': 'https://www.googleapis.com/youtube/v3/search?part=snippet' +
@@ -201,15 +243,28 @@ var YouTubeData = (function() {
   var _fetchComments = function(videoId) {
     // get comments for vid
     return gapi.client.request({
-      'path': 'https://www.googleapis.com/youtube/v3/commentThreads?part=snippet,replies&order=relevance&textFormat=plainText&videoId=' + catbSettings.currentVid
+      'path': 'https://www.googleapis.com/youtube/v3/commentThreads?part=snippet,replies&order=relevance&textFormat=plainText' +
+      '&videoId=' + catbSettings.currentVid
     }).then(function(response) {
 
+      // console.log('FETCH COMMENTS RESULT :: ', response.status);
       var commentData = response.result.items;
 
       // console.log('COMMENTS :: ', response.result.items);
 
       // empty current comments
       catbSettings.currentComments = [];
+
+      // if no comments, let the user know
+      if(commentData.length === 0) {
+        // var modalObj = {
+        //   header: 'Wha-Oh!',
+        //   words: 'Looks like this video doesn\'t have any comments! That\'s no fun, go ahead and try another.'
+        // };
+        // Catb.toggleModal(modalObj);
+        console.log('NO COMMENTS ON THIS VIDEO, MOVING TO NEXT');
+        // TODO :: Playlist.next();
+      }
 
       // populate current comments
       for (var i = 0; i < commentData.length; i++) {
@@ -226,7 +281,7 @@ var YouTubeData = (function() {
         });
         if (commentData[i].replies !== undefined && commentData[i].replies.comments.length > 0) {
           for (var j = 0; j < commentData[i].replies.comments.length; j++) {
-            console.log(commentData[i]);
+            // console.log(commentData[i]);
             catbSettings.currentComments.push({
               text: commentData[i].replies.comments[j].snippet.textDisplay,
               isReply: true,
@@ -240,6 +295,21 @@ var YouTubeData = (function() {
         } else {
           // console.log('NO REPLIES');
         }
+      }
+    }, function(error) {
+      // comments are disabled if 403, go to next in playlist or show modal
+      if(error.status === 403) {
+        if(Playlist.getCurrent().length) {
+          Playlist.nextVid();
+        } else {
+          Catb.toggleModal({
+            header: 'Wha-Oh!',
+            words: 'Comments are disabled on this video. LAME. Go ahead and try something else!'
+          });
+        }
+        // catbSettings.currentPlaylistInc++;
+        // catbSettings.currentVid = catbSettings.currentPlaylist[catbSettings.currentPlaylistInc].id;
+        // doMainQuery('id');
       }
     });
   };

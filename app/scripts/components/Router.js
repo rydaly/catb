@@ -12,7 +12,7 @@ var CatbRouter = (function() {
   };
 
   var setHash = function(val) {
-    console.log('SET HASH :: ', val);
+    // console.log('SET HASH :: ', val);
     window.location.hash = '#' + val;
     // window.location.search = val;
     // if(history.pushState) {

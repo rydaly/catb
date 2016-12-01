@@ -73,6 +73,7 @@ var Catb = (function() {
 
     menuIdForm.submit(function(e) {
       var id = document.getElementById('menu-id-input').value; // TODO :: move this selector
+      Playlist.setCurrent([]); // clear playlist
       catbSettings.currentVid = id;
       e.preventDefault();
       toggleMenu();
