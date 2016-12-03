@@ -78,7 +78,7 @@ var Catb = (function() {
       e.preventDefault();
       _toggleMenu();
 
-      catbSettings.currentVid = id;
+      catbSettings.setCurrent(id);
       Playlist.setCurrent([]); // clear playlist
       YouTubeData.doMainQuery('id');
 

@@ -66,7 +66,7 @@ var YouTubeData = (function() {
             return;
           }
           Playlist.setCurrent(results.result.items);
-          catbSettings.currentVid = Playlist.getCurrent()[0].id.videoId;
+          catbSettings.setCurrent(Playlist.getCurrent()[0].id.videoId);
           _doIdQuery().then(function(results) {
             postQuerySetup(results);
           });
@@ -84,7 +84,7 @@ var YouTubeData = (function() {
         _doCatQuery().then(function(results) {
           if (results.result.items.length) {
             Playlist.setCurrent(results.result.items);
-            catbSettings.currentVid = Playlist.getCurrent()[0].id.videoId;
+            catbSettings.setCurrent(Playlist.getCurrent()[0].id.videoId);
           }
           postQuerySetup(results);
         });
@@ -103,7 +103,7 @@ var YouTubeData = (function() {
               return;
             }
             Playlist.setCurrent(results.result.items);
-            catbSettings.currentVid = Playlist.getCurrent()[0].id.videoId;
+            catbSettings.setCurrent(Playlist.getCurrent()[0].id.videoId);
             _doIdQuery().then(function(results) {
               postQuerySetup(results);
             });
@@ -139,19 +139,18 @@ var YouTubeData = (function() {
         vidViewsDiv.html(videoStats.viewCount + ' Views');
         vidLikesDiv.html('<i class="fa fa-thumbs-up" aria-hidden="true"></i> ' + videoStats.likeCount);
         vidDislikesDiv.html('<i class="fa fa-thumbs-down" aria-hidden="true"></i> ' + videoStats.dislikeCount);
+      }
 
-        // handle individual properties for query types
-        switch (queryType) {
-          case 'search':
-          case 'channel':
-            catbSettings.queryOptions.categoryId = null;
-            break;
-          case 'id':
-          case 'category':
-            catbSettings.currentVid = videoData.id;
-            break;
-        }
-
+      // handle individual properties for query types
+      switch (queryType) {
+        case 'search':
+        case 'channel':
+          catbSettings.queryOptions.categoryId = null;
+          break;
+        case 'id':
+        case 'category':
+          catbSettings.currentVid = videoData.id;
+          break;
       }
 
       _fetchComments().then(function(result) {

@@ -14,7 +14,7 @@ var Playlist = (function() {
   var nextVid = function() {
     if (_currentPlaylist.length && !_killSwitch) {
 
-      // loop playlist 
+      // loop playlist
       if(_currentPlaylistInc < _currentPlaylist.length - 1) {
         _currentPlaylistInc++;
       } else {
@@ -23,9 +23,9 @@ var Playlist = (function() {
 
       // handle differing results from YT api queries
       if (_currentPlaylist[_currentPlaylistInc].id.videoId) {
-        catbSettings.currentVid = _currentPlaylist[_currentPlaylistInc].id.videoId;
+        catbSettings.setCurrent(_currentPlaylist[_currentPlaylistInc].id.videoId);
       } else {
-        catbSettings.currentVid = _currentPlaylist[_currentPlaylistInc].id;
+        catbSettings.setCurrent(_currentPlaylist[_currentPlaylistInc].id);
       }
 
       // get next vid

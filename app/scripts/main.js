@@ -3,9 +3,6 @@
 // TODO :: media queries | small screen comment box, avatar on top
 //      :: clean up app initial load. Fade in, etc...
 //      :: add 'view on YouTube' link and link to channels in video details
-//      :: check for empty or undefined hash and load default if so
-//      :: loop comment playback when only one video
-//      :: playlist looping, comment looping super janky... 
 
 var catbSettings = {
   queryOptions: {
@@ -15,10 +12,16 @@ var catbSettings = {
   },
   defaultVoice: null,
   categories: [],
+  previousVid: '',
   currentVid: 'EFo84MVbVQ8',
   currentComments: [],
   isMobile: true,
-  hasSpeechSynth: false
+  hasSpeechSynth: false,
+
+  setCurrent: function(vidId) {
+    this.previousVid = this.currentVid;
+    this.currentVid = vidId;
+  }
 };
 
 $(document).ready(function() {
@@ -45,17 +48,12 @@ $(document).ready(function() {
 
     // When they're both ready...
     $.when(ytData, speech).done(function(r1, r2) {
-      var hash = CatbRouter.getHash();
 
       // initialize main app
       Catb.init();
 
-      // get hash if we have one
-      if(hash) {
-        catbSettings.currentVid = hash;
-      } else {
-        // Do default query :: TODO
-      }
+      // set current vid to hash
+      catbSettings.currentVid = CatbRouter.getHash();
 
       // perform main query to YouTubeData API
       YouTubeData.doMainQuery('id');
@@ -66,6 +64,7 @@ $(document).ready(function() {
   };
 
   var onCommentsReady = function(e) {
+    console.log(catbSettings.previousVid, catbSettings.currentVid);
     // we're good to go, let's do this thing!
     SpeechSynth.cancelReadback();
     CatbRouter.setHash(catbSettings.currentVid);
