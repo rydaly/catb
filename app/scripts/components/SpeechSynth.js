@@ -146,16 +146,27 @@ var SpeechSynth = (function() {
       };
 
       msg.onerror = function(e) {
-        console.log('Error in speech, going to next :: ', inc);
         inc++;
         _readNextComment();
       }
 
     } else {
-      // console.log(' :: DONE READING COMMENTS :: ');
       commentDiv.addClass('hide').removeClass('show');
-      Playlist.nextVid();
-      // TODO :: if no next vid, loop readback
+
+      // no comments and no playlist
+      if(!Playlist.getCurrent().length && !catbSettings.currentComments.length) {
+        return;
+      }
+
+      // if there's a playlist, go to next video
+      // else loop comment playback on single video
+      if (Playlist.getCurrent().length) {
+        Playlist.nextVid();
+      } else {
+        inc = 0;
+        _readNextComment();
+      }
+
     }
   };
 

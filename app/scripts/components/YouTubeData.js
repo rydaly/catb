@@ -98,6 +98,10 @@ var YouTubeData = (function() {
           }
           var topHitChannelId = results.result.items[0].id.channelId;
           _doChannelQuery(topHitChannelId).then(function(results) {
+            if (!results.result.items.length) {
+              Modals.toggleModal('The matched channel returned an empty set! Try something else.');
+              return;
+            }
             Playlist.setCurrent(results.result.items);
             catbSettings.currentVid = Playlist.getCurrent()[0].id.videoId;
             _doIdQuery().then(function(results) {
@@ -173,7 +177,7 @@ var YouTubeData = (function() {
   };
 
   var _doIdQuery = function() {
-    console.log('curVid :: ', catbSettings.currentVid);
+    // console.log('curVid :: ', catbSettings.currentVid);
     return gapi.client.request({
       'path': 'https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics,status' +
         '&regionCode=' + catbSettings.queryOptions.regionCode +

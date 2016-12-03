@@ -13,15 +13,22 @@ var Playlist = (function() {
 
   var nextVid = function() {
     if (_currentPlaylist.length && !_killSwitch) {
-      // console.log();
-      _currentPlaylistInc = (_currentPlaylistInc < _currentPlaylist.length - 1) ? _currentPlaylistInc += 1 : 0;
 
+      // loop playlist 
+      if(_currentPlaylistInc < _currentPlaylist.length - 1) {
+        _currentPlaylistInc++;
+      } else {
+        _currentPlaylistInc = 0;
+      }
+
+      // handle differing results from YT api queries
       if (_currentPlaylist[_currentPlaylistInc].id.videoId) {
         catbSettings.currentVid = _currentPlaylist[_currentPlaylistInc].id.videoId;
       } else {
         catbSettings.currentVid = _currentPlaylist[_currentPlaylistInc].id;
       }
 
+      // get next vid
       YouTubeData.doMainQuery('id');
     }
 
@@ -31,8 +38,8 @@ var Playlist = (function() {
     _numWithoutComments++;
 
     if(_numWithoutComments === _currentPlaylist.length) {
-      console.log('NO VIDEOS IN THIS PLAYLIST HAVE COMMENTS !!!!!!!!!!!!!!! ');
       _killSwitch = true;
+      _numWithoutComments = 0;
       Modals.toggleModal('None of the videos in this playlist have comments! BORING. Go ahead and try something else.');
     }
   };

@@ -5,6 +5,7 @@
 //      :: add 'view on YouTube' link and link to channels in video details
 //      :: check for empty or undefined hash and load default if so
 //      :: loop comment playback when only one video
+//      :: playlist looping, comment looping super janky... 
 
 var catbSettings = {
   queryOptions: {
