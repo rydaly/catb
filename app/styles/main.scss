@@ -127,6 +127,16 @@ small {
   background: rgba($base-font-color, 0.97);
 }
 
+.modal-copy-form {
+  margin-top: 1.1em;
+  input {
+    background: lighten($base-font-color, 1%);
+    border: 1px solid rgba($base-bg-color, 0.25);
+    color: $base-bg-color;
+    text-align: center;
+  }
+}
+
 button.close {
   padding: 10px 25px;
   text-transform: uppercase;

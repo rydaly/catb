@@ -16,10 +16,11 @@ var Modals = (function() {
     toggleModal();
   });
 
-  var toggleModal = function(msg) {
+  var toggleModal = function(msg, head = '') {
 
-    _modalHeader.text(_modalDefaultHeaderText);
-    _modalContent.text(msg);
+    _modalHeader.html(_modalDefaultHeaderText);
+    if(head) _modalHeader.html(head);
+    _modalContent.html(msg);
 
     if (_modalDiv.css('display') === 'none') {
       _modalDiv.css({ 'display': 'flex', 'z-index': 9 });

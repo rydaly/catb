@@ -51,6 +51,11 @@ var Catb = (function() {
       _toggleMenu();
     });
 
+    _shareBtn.click(function() {
+      var copyForm = '<form class="modal-copy-form"><input onClick="this.select();" type="text" name="copy_url" value="' + window.location.href + '" size="' + window.location.href.length + '" readonly></form>';
+      Modals.toggleModal('Here ya go, a link to the current video! Share it.' + copyForm, 'Copy This!');
+    });
+
     _menuVideoSearchForm.submit(function(e) {
       e.preventDefault();
       _toggleMenu();
