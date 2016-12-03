@@ -3,10 +3,9 @@
 // TODO :: media queries | small screen comment box, avatar on top
 //      :: clean up app initial load. Fade in, etc...
 //      :: add 'view on YouTube' link and link to channels in video details
-//      :: prefixes / bourbon
 //      :: check for empty or undefined hash and load default if so
-//      :: create a Modals module
 //      :: loop comment playback when only one video
+//      :: add share button?
 
 var catbSettings = {
   queryOptions: {

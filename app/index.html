@@ -48,15 +48,6 @@
     </div>
 
     <div class="comments-overlay">
-      <div class="vid-details">
-        <div class="vid-title"></div>
-        <div class="vid-uploader"></div>
-        <div class="vid-stats">
-          <span class="vid-stats-views"></span> |
-          <span class="vid-stats-likes"></span>
-          <span class="vid-stats-dislikes"></span>
-        </div>
-      </div>
 
       <div class="comment hide">
         <img class="comment-avatar" src="">
@@ -72,7 +63,22 @@
           </div>
         </div>
       </div>
-    </div>
+
+      <div class="vid-details">
+        <div class="vid-title"></div>
+        <div class="vid-uploader"></div>
+        <div class="vid-stats">
+          <span class="vid-stats-views"></span> |
+          <span class="vid-stats-likes"></span>
+          <span class="vid-stats-dislikes"></span>
+        </div>
+      </div>
+
+      <!-- <div class="share-btn">
+        <i class="fa fa-share-alt" aria-hidden="true"></i>
+      </div> -->
+
+    </div> <!-- End overlay -->
 
     <div class="menu-toggle-btn"></div>
     <menu class="menu">
@@ -90,9 +96,9 @@
       <div>
         <form class="menu-video-search-form">
           <label>Keyword Search •
-            <small>returns the most relevant video for your query</small>
+            <small>returns a playlist of the most relevant videos for your query</small>
           </label>
-          <input id="menu-video-search" name="menu-video-search">
+          <input class="menu-input" id="menu-video-search" name="menu-video-search">
           <input type="submit" value="GO!">
         </form>
       </div>
@@ -100,9 +106,9 @@
       <div>
         <form class="menu-channel-search-form">
           <label>Channel Search •
-            <small>returns the most relevant channel's latest video</small>
+            <small>returns a playlist of the most relevant channel's latest videos</small>
           </label>
-          <input id="menu-channel-search" name="menu-channel-search">
+          <input class="menu-input" id="menu-channel-search" name="menu-channel-search">
           <input type="submit" value="GO!">
         </form>
       </div>
@@ -112,14 +118,14 @@
           <label>Manual ID •
             <small>returns video with matching id</small>
           </label>
-          <input id="menu-id-input" name="menu-id-input">
+          <input class="menu-input" id="menu-id-input" name="menu-id-input">
           <input type="submit" value="GO!">
         </form>
       </div>
 
       <div>
         <label>Category •
-          <small>returns the current most popular video in category</small>
+          <small>returns a playlist of the most popular videos in category</small>
         </label>
         <ul class="category-select"></ul>
       </div>
@@ -175,6 +181,7 @@
     <script src="scripts/main.js"></script>
     <script src="scripts/components/Catb.js"></script>
     <script src="scripts/components/CatbUtil.js"></script>
+    <script src="scripts/components/Modals.js"></script>
     <script src="scripts/components/Playlist.js"></script>
     <script src="scripts/components/Router.js"></script>
     <script src="scripts/components/YouTubePlayer.js"></script>

@@ -37,41 +37,53 @@ a {
   font-weight: 300;
   color: rgba($base-font-color, 0.7);
   cursor: pointer;
-  transition: color 0.2s;
+  @include transition(color 0.2s ease);
 
   &:hover {
     color: rgba($base-font-color, 0.97);
   }
 }
 
+$menu-form-color: $base-font-color;
+$menu-form-bg-color: lighten($base-bg-color, 2%);
+$menu-form-focus-bg-color: lighten($base-bg-color, 6%);
+$menu-form-border-color: darken($base-font-color, 25%);
+
 input {
   font-family: 'Roboto Mono', monospace;
-  background: darken($base-font-color, 10%);
-  color: $base-bg-color;
+  background: $menu-form-bg-color;
+  color: $menu-form-color;
   width: 100%;
-  padding: 12px 20px;
+  padding: 20px;
   margin: 0 0 5px;
   box-sizing: border-box;
   border: none;
   outline: none;
   font-size: 1em;
   line-height: 1.3em;
-  transition: background 0.2s;
+  @include transition(all 0.2s ease);
+
+  &.menu-input {
+    width: 75%;
+    border: 1px solid $menu-form-border-color;
+  }
 
   &:focus {
-    background: darken($base-font-color, 0%);
+    background: $menu-form-focus-bg-color;
   }
 }
 
 input[type=submit] {
+  width: 25%;
+  float: right;
   padding: 20px 10px;
-  background: lighten($base-bg-color, 10%);
   cursor: pointer;
-  color: darken($base-font-color, 10%);
-  transition: background 0.2s;
+  border: 1px solid $menu-form-border-color;
+  border-left: none;
+  @include transition(all 0.2s ease);
 
   &:hover {
-    background: lighten($base-bg-color, 15%);
+    background: $menu-form-focus-bg-color;
   }
 }
 
@@ -127,7 +139,7 @@ button.close {
 
   &:hover {
     background: rgba($base-bg-color, 0.1);
-    transition: background 0.2s;
+    @include transition(all 0.2s ease);
   }
 }
 
@@ -161,21 +173,7 @@ button.close {
 }
 
 iframe {
-  // animation: pulse 20s infinite cubic-bezier(0.445, 0.05, 0.55, 0.95);
   overflow: hidden;
-}
-@include keyframes(pulse) {
-  0% {
-    transform: scale(1.1);
-  }
-
-  50% {
-    transform: scale(1.4);
-  }
-
-  100% {
-    transform: scale(1.1);
-  }
 }
 
 .comments-overlay {
@@ -188,7 +186,7 @@ iframe {
   bottom: 0;
   left: 0;
   overflow: hidden;
-  background: rgba($base-bg-color, 0.9);
+  background: rgba($base-bg-color, 0.75);
 }
 
 .vid-details {
@@ -259,12 +257,25 @@ iframe {
   }
 }
 
+.share-btn {
+  position: absolute;
+  bottom: 15px; right: 15px;
+  padding: 0.5em;
+  font-size: 1.5em;
+  background: rgba($base-bg-color, 0.95);
+  border: 1px solid darken($base-bg-color, 5%);
+  border-radius: 5px;
+  cursor: pointer;
+  z-index: 9;
+}
+
 .menu-toggle-btn {
   position: absolute;
   top: 15px;
   right: 15px;
   padding: 10px;
   background: rgba($base-bg-color, 0.95);
+  border: 1px solid darken($base-bg-color, 5%);
   border-radius: 5px;
   cursor: pointer;
   z-index: 9;
@@ -290,8 +301,6 @@ iframe {
   margin: 0;
   padding: 25px;
   background: rgba($base-bg-color, 0.97);
-  border-left: 1px solid rgba($base-bg-color, 1);
-  box-shadow: -4px 0 10px $base-bg-color;
   z-index: 8;
   overflow-x: hidden;
   overflow-y: scroll;
@@ -301,7 +310,6 @@ iframe {
     margin: 0 auto;
   }
 }
-$cat-border-color: rgba($base-font-color, 0.1);
 
 .category-select {
   list-style-type: none;
@@ -314,39 +322,45 @@ $cat-border-color: rgba($base-font-color, 0.1);
     width: 100%;
     display: inline-block;
     text-align: center;
-    padding: 15px 10px;
-    border-bottom: 1px solid $cat-border-color;
+    border-bottom: 1px solid $menu-form-border-color;
     cursor: pointer;
 
+    a {
+      display: inline-block;
+      width: 100%;
+      height: 100%;
+      padding: 15px 10px;
+    }
+
     &:hover {
-      background: lighten($base-bg-color, 10%);
+      background: $menu-form-focus-bg-color;
     }
 
     &:first-child {
-      border-top: 1px solid $cat-border-color;
+      border-top: 1px solid $menu-form-border-color;
     }
     @media screen and (min-width: $break-medium) {
       width: 50%;
 
       &:nth-child(1),
       &:nth-child(2) {
-        border-top: 1px solid $cat-border-color;
+        border-top: 1px solid $menu-form-border-color;
       }
 
       &:nth-child(odd) {
-        border-right: 1px solid $cat-border-color;
+        border-right: 1px solid $menu-form-border-color;
       }
     }
     @media screen and (min-width: $break-lrg) {
       width: 33.3%;
 
       &:nth-child(3) {
-        border-top: 1px solid $cat-border-color;
+        border-top: 1px solid $menu-form-border-color;
       }
 
       &:nth-child(3n+1),
       &:nth-child(3n+2) {
-        border-right: 1px solid $cat-border-color;
+        border-right: 1px solid $menu-form-border-color;
       }
 
       &:nth-child(3n+3) {
@@ -359,7 +373,7 @@ $cat-border-color: rgba($base-font-color, 0.1);
 .menu-about {
   a {
     border-bottom: 1px solid rgba($base-font-color, 0.5);
-    transition: border-color 0.2s;
+    @include transition(all 0.2s ease);
 
     &:hover {
       border-bottom-color: rgba($base-font-color, 0.97);

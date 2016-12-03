@@ -11,6 +11,24 @@ var CatbUtil = (function() {
     return Math.random() * (max - min) + min;
   };
 
+  // Filters out comments that are not English or have link embedded
+  var commentFilter = function(input) {
+      if (input === undefined) return false;
+
+      var firstWord = input.split(' ')[0];
+      var english = /^[A-Za-z0-9]*$/;
+      // var invalidChars = myString.replace(/\uFFFD/g, '');
+      var invalidChars = /\uFFFD/g;
+      var urlCheck = new RegExp('([a-zA-Z0-9]+://)?([a-zA-Z0-9_]+:[a-zA-Z0-9_]+@)?([a-zA-Z0-9.-]+\\.[A-Za-z]{2,4})(:[0-9]+)?(/.*)?');
+
+      if (firstWord.match(english)) {
+        // return false if has link
+        return urlCheck.test(input) ? false : true;
+      } else {
+        return false;
+      }
+  };
+
   /**
    * jQuery.browser.mobile (http://detectmobilebrowser.com/)
    *
@@ -22,7 +40,8 @@ var CatbUtil = (function() {
   })(navigator.userAgent || navigator.vendor || window.opera);
 
   return {
-    randomRange: randomRange
+    randomRange: randomRange,
+    commentFilter: commentFilter
   };
 
 })();

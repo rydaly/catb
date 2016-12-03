@@ -13,25 +13,25 @@ var SpeechSynth = (function() {
     'Zarvox'
   ];
 
-  var commentDiv = $('.comment');
-  var commentTextDiv = $('.comment-content');
-  var commentDetailsDiv = $('.comment-details');
-  var commentUserDiv = $('.comment-username');
-  var commentAvatarDiv = $('.comment-avatar');
-  var commentReplyDiv = $('.comment-is-reply');
-  var commentReplyToDiv = $('.comment-in-reply-to');
-  var commentLikesDiv = $('.comment-likes');
-  var readNextTimeout = null;
-  var fadeOutTimeout = null;
-  var voices = [];
-  var inc = 0;
+  var commentDiv = $('.comment'),
+    commentTextDiv = $('.comment-content'),
+    commentDetailsDiv = $('.comment-details'),
+    commentUserDiv = $('.comment-username'),
+    commentAvatarDiv = $('.comment-avatar'),
+    commentReplyDiv = $('.comment-is-reply'),
+    commentReplyToDiv = $('.comment-in-reply-to'),
+    commentLikesDiv = $('.comment-likes'),
+    readNextTimeout = null,
+    fadeOutTimeout = null,
+    voices = [],
+    inc = 0;
 
   var _filterVoices = function(str) {
     return _voiceExclusions.indexOf(str) > -1 ? false : true;
   };
 
   var init = function() {
-    // console.log('init speech synth!');
+
     var d = $.Deferred();
 
     if (catbSettings.hasSpeechSynth) {
@@ -57,15 +57,9 @@ var SpeechSynth = (function() {
     } else {
 
       if (catbSettings.isMobile) {
-        Catb.toggleModal({
-          header: 'Wha-Oh!',
-          words: 'Support for the speech sythesis is spotty on mobile devices. Try using a more modern browser or come back on your desktop. Feel free to continue, but you won\'t be getting a complete experience.'
-        });
+        Modals.toggleModal('Support for speech sythesis is spotty on mobile devices. Try using a more modern browser or come back on your desktop. Feel free to continue, but you won\'t be getting a complete experience.');
       } else {
-        Catb.toggleModal({
-          header: 'Wha-Oh!',
-          words: 'Looks like your browser doesn\'t support speech synthesis. Time for an upgrade! Feel free to continue, but you\'ll basically just be seeing a video player!'
-        });
+        Modals.toggleModal('Looks like your browser doesn\'t support speech synthesis. Time for an upgrade! Feel free to continue, but you\'ll basically just be seeing a video player!');
       }
 
       d.reject('SpeechSynth :: Voices Not Avaiable');
@@ -85,12 +79,10 @@ var SpeechSynth = (function() {
     clearTimeout(fadeOutTimeout);
     readNextTimeout = null;
     fadeOutTimeout = null;
-
     inc = 0;
   };
 
   var _readNextComment = function() {
-    // console.log('READ NEXT :: ', inc);
 
     if (inc < catbSettings.currentComments.length) {
 
@@ -115,7 +107,6 @@ var SpeechSynth = (function() {
       commentAvatarDiv.attr('src', avatar);
 
       if(isReply) {
-        // console.log('THIS IS A REPLY, SHOW REPLY INDICATOR');
         commentDetailsDiv.addClass('is-reply');
         commentReplyToDiv.html('<span>in reply to: </span>' + inReplyTo);
         commentReplyDiv.show();
@@ -143,26 +134,15 @@ var SpeechSynth = (function() {
 
       msg.onend = function(e) {
         // console.log('Finished :: ', inc + ' of ' + catbSettings.currentComments.length);
-        // console.log('comment length :: ', catbSettings.currentComments[inc].text.length);
-
-        // commentDiv.delay(fadeOutDelay).addClass('hide').removeClass('show');
         fadeOutTimeout = setTimeout(function() {
           commentDiv.addClass('hide').removeClass('show');
         }, fadeOutDelay);
 
-        inc++;
-
-        // TODO :: handle comment filtering in fetchComments .. get all setup before readback
-        // TODO :: better filtering... lots of comment slip through
-        // while (!_commentFilter(catbSettings.currentComments[inc].text) && inc < catbSettings.currentComments.length) {
-        //   console.log('SKIPPING :: ', inc);
-        //   inc++
-        // };
-
-        // TODO :: this timeout probably needs to be cleared
         readNextTimeout = setTimeout(function() {
           _readNextComment();
         }, fadeOutDelay + 1500);
+
+        inc++;
       };
 
       msg.onerror = function(e) {
@@ -172,27 +152,11 @@ var SpeechSynth = (function() {
       }
 
     } else {
-      console.log('DONE READING COMMENTS');
+      // console.log(' :: DONE READING COMMENTS :: ');
       commentDiv.addClass('hide').removeClass('show');
       Playlist.nextVid();
-      // TODO :: advance to another video here?
+      // TODO :: if no next vid, loop readback
     }
-  };
-
-  var _commentFilter = function(input) {
-      if (input === undefined) return false;
-      if (input.length > 300) return false; // Chrome bug doesn't like long messages
-
-      var firstWord = input.split(' ')[0];
-      var english = /^[A-Za-z0-9]*$/;
-      var urlCheck = new RegExp('([a-zA-Z0-9]+://)?([a-zA-Z0-9_]+:[a-zA-Z0-9_]+@)?([a-zA-Z0-9.-]+\\.[A-Za-z]{2,4})(:[0-9]+)?(/.*)?');
-
-      if (firstWord.match(english)) {
-        // return false if has link
-        return urlCheck.test(input) ? false : true;
-      } else {
-        return false;
-      }
   };
 
   return {

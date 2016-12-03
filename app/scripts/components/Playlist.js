@@ -5,16 +5,18 @@
  *********************************/
 
 var Playlist = (function() {
+
   var _currentPlaylist = [],
-    _currentPlaylistInc = 0;
+    _currentPlaylistInc = 0,
+    _numWithoutComments = 0,
+    _killSwitch = false;
 
   var nextVid = function() {
-    // console.log('CURRENT PLAYLIST :: ', _currentPlaylist);
-    if(_currentPlaylist.length) {
-      // console.log('nextVid CURRENT :: ', _currentPlaylist[_currentPlaylistInc]);
+    if (_currentPlaylist.length && !_killSwitch) {
+      // console.log();
       _currentPlaylistInc = (_currentPlaylistInc < _currentPlaylist.length - 1) ? _currentPlaylistInc += 1 : 0;
 
-      if(_currentPlaylist[_currentPlaylistInc].id.videoId) {
+      if (_currentPlaylist[_currentPlaylistInc].id.videoId) {
         catbSettings.currentVid = _currentPlaylist[_currentPlaylistInc].id.videoId;
       } else {
         catbSettings.currentVid = _currentPlaylist[_currentPlaylistInc].id;
@@ -22,14 +24,24 @@ var Playlist = (function() {
 
       YouTubeData.doMainQuery('id');
     }
-    // console.log('CURRENT LIST :: ', _currentPlaylist);
-    // console.log('DEFAULT LIST :: ', _defaultPlaylist);
-    // console.log('CURRENT INC :: ', _currentPlaylistInc);
+
+  };
+
+  var incrementNoComments = function() {
+    _numWithoutComments++;
+
+    if(_numWithoutComments === _currentPlaylist.length) {
+      console.log('NO VIDEOS IN THIS PLAYLIST HAVE COMMENTS !!!!!!!!!!!!!!! ');
+      _killSwitch = true;
+      Modals.toggleModal('None of the videos in this playlist have comments! BORING. Go ahead and try something else.');
+    }
   };
 
   var setCurrent = function(obj) {
-    console.log('SET CURRENT :: ', obj);
     _currentPlaylist = obj;
+    _currentPlaylistInc = 0;
+    _numWithoutComments = 0;
+    _killSwitch = false;
   };
 
   var getCurrent = function() {
@@ -38,7 +50,9 @@ var Playlist = (function() {
 
   return {
     nextVid: nextVid,
+    incrementNoComments: incrementNoComments,
     setCurrent: setCurrent,
     getCurrent: getCurrent
-  }
+  };
+
 })();

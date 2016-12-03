@@ -1,36 +1,8 @@
-@mixin animation($animate...) {
-  $max: length($animate);
-  $animations: '';
-  @for $i from 1 through $max {
-    $animations: #{$animations + nth($animate, $i)};
-    @if $i < $max {
-      $animations: #{$animations + ", "};
-    }
-  }
-  -webkit-animation: $animations;
-  -moz-animation: $animations;
-  -o-animation: $animations;
-  animation: $animations;
-}
-@mixin keyframes($animationName) {
-   @-webkit-keyframes #{$animationName}{
-    @content;
-  }
-  @-moz-keyframes #{$animationName} {
-     @content;
-  }
-  @-o-keyframes #{$animationName} {
-     @content;
-  }
-  @keyframes #{$animationName} {
-     @content;
-  }
-}
 /*
   COMMENT BUBBLES
  */
 $bubble-text: #0d1921;
-$bubble-bg: rgba(#aec0ca, 0.8);
+$bubble-bg: rgba(#aec0ca, 1);
 $bubble-border: $bubble-text;
 @mixin speech-bubble($side: left, $offset-direction: top) {
   $offset: 16px;

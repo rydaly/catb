@@ -4,11 +4,10 @@
  *
  *********************************/
 
-
 var YouTubePlayer = (function() {
 
   var _player = null,
-    playerDiv;
+    _playerDiv;
 
   var initAPI = function() {
     var tag = document.createElement('script');
@@ -43,12 +42,12 @@ var YouTubePlayer = (function() {
       });
 
       function onPlayerReady(e) {
-        playerDiv = $('#player');
+        _playerDiv = $('#player');
 
         if (catbSettings.isMobile) {
-          playerDiv.fadeIn('fast');
+          _playerDiv.fadeIn('fast');
         } else {
-          playerDiv.fadeIn('fast'); // TODO :: need to consolidate this type of thing
+          _playerDiv.fadeIn('fast'); // TODO ??
         }
 
         e.target.setVolume(15);
@@ -59,8 +58,9 @@ var YouTubePlayer = (function() {
         if (e.data === YT.PlayerState.ENDED) {
           e.target.playVideo(); // loop video
         } else if (e.data === YT.PlayerState.PLAYING) {
-          catbSettings.els.commentsOverlay.css('display', 'flex');
-          playerDiv.fadeIn('fast');
+          Catb.domEls.commentsOverlay.css('display', 'flex');
+          _playerDiv.fadeIn('fast');
+          // TODO :: dispatch event here to start readback in SpeechSynth
         }
       }
 

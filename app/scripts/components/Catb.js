@@ -4,34 +4,27 @@
  *
  *********************************/
 
-
 var Catb = (function() {
 
-  var els = {
-    modalDiv: $('.modal'),
-    modalHeader: $('.modal-header'),
-    modalContent: $('.modal-words'),
-    commentsOverlay: $('.comments-overlay')
-  };
+  var domEls = {};
 
   var init = function() {
-    // console.log('INIT CATB');
-    catbSettings.els = els; // TODO :: this needed? don't really know yet
-    _handleDomTasks(); // TODO :: don't need this call if it's the only method, just move contents here
-  };
 
-  var _handleDomTasks = function() {
-    // console.log('HANDLE DOM');
+    // init global dom els off the bat
+    var _initDom = (function() {
+      domEls.commentsOverlay = $('.comments-overlay');
+    })();
 
-    var categoryMenu = $('.category-select');
-    var menuBtn = $('.menu-toggle-btn');
-    var mainMenu = $('.menu');
-    var menuVideoSearchForm = $('.menu-video-search-form');
-    var menuChannelSearchForm = $('.menu-channel-search-form');
-    var menuIdForm = $('.menu-id-form');
-    var modalDismissBtn = $('.close'); // TODO :: move these to els object above?
+    var _categoryMenu = $('.category-select'),
+      _menuBtn = $('.menu-toggle-btn'),
+      _mainMenu = $('.menu'),
+      _menuVideoSearchForm = $('.menu-video-search-form'),
+      _menuChannelSearchForm = $('.menu-channel-search-form'),
+      _menuIdForm = $('.menu-id-form'),
+      _menuIdInput = $('#menu-id-input'),
+      _shareBtn = $('.share-btn');
 
-    var getMenuItem = function(itemData) {
+    var _getMenuItem = function(itemData) {
       var item = $('<li>')
         .append(
           $('<a>', {
@@ -40,80 +33,58 @@ var Catb = (function() {
           }).click(function() {
             catbSettings.queryOptions.categoryId = itemData.id;
             YouTubeData.doMainQuery('category'); // TODO
-            toggleMenu();
+            _toggleMenu();
           }));
       return item;
     };
 
+    var _toggleMenu = function() {
+      _mainMenu.toggle();
+      _menuBtn.toggleClass('menu-open');
+    };
+
     $.each(catbSettings.categories, function() {
-      categoryMenu.append(getMenuItem(this));
+      _categoryMenu.append(_getMenuItem(this));
     });
 
-    menuBtn.click(function() {
-      toggleMenu();
+    _menuBtn.click(function() {
+      _toggleMenu();
     });
 
-    modalDismissBtn.click(function() {
-      toggleModal();
-    });
-
-    menuVideoSearchForm.submit(function(e) {
+    _menuVideoSearchForm.submit(function(e) {
       e.preventDefault();
-      toggleMenu();
+      _toggleMenu();
+
       YouTubeData.doMainQuery('search');
       return false;
     });
 
-    menuChannelSearchForm.submit(function(e) {
+    _menuChannelSearchForm.submit(function(e) {
       e.preventDefault();
-      toggleMenu();
+      _toggleMenu();
+
       YouTubeData.doMainQuery('channel');
       return false;
     });
 
-    menuIdForm.submit(function(e) {
-      var id = document.getElementById('menu-id-input').value; // TODO :: move this selector
-      Playlist.setCurrent([]); // clear playlist
-      catbSettings.currentVid = id;
+    _menuIdForm.submit(function(e) {
+      var id = _menuIdInput.val();
+
       e.preventDefault();
-      toggleMenu();
+      _toggleMenu();
+
+      catbSettings.currentVid = id;
+      Playlist.setCurrent([]); // clear playlist
       YouTubeData.doMainQuery('id');
+
       return false;
     });
 
-    function toggleMenu() {
-      mainMenu.toggle();
-      menuBtn.toggleClass('menu-open');
-    }
-  };
-
-  var toggleModal = function(obj = null) {
-    console.log('modal content :: ', obj);
-
-    if (obj !== null) {
-      catbSettings.els.modalHeader.text(obj.header);
-      catbSettings.els.modalContent.text(obj.words);
-    }
-
-    // console.log(modalDiv.css('display'));
-    if (catbSettings.els.modalDiv.css('display') === 'none') {
-      catbSettings.els.modalDiv.css({
-        'display': 'flex',
-        'z-index': 9
-      });
-      catbSettings.els.commentsOverlay.css('z-index', '-1');
-    } else {
-      catbSettings.els.modalDiv.css({
-        'display': 'none',
-        'z-index': -1
-      });
-      catbSettings.els.commentsOverlay.css('z-index', '1');
-    }
   };
 
   return {
     init: init,
-    toggleModal: toggleModal
+    domEls: domEls
   };
 
 })();
