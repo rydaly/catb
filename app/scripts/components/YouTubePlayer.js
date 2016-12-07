@@ -60,18 +60,18 @@ var YouTubePlayer = (function() {
 
       function onPlayerStateChange(e) {
         switch (e.data) {
-          case YT.PlayerState.BUFFERING :
+          case YT.PlayerState.BUFFERING:
             _player.isBuffered = false;
             break;
-          case YT.PlayerState.PLAYING :
+          case YT.PlayerState.PLAYING:
             // will not fire when video loops
-            if(!_player.isBuffered) {
+            if (!_player.isBuffered) {
               _player.isBuffered = true;
               showPlayer();
               window.dispatchEvent(videoStartedEvent);
             }
             break;
-          case YT.PlayerState.ENDED :
+          case YT.PlayerState.ENDED:
             e.target.seekTo(0);
             break;
         }

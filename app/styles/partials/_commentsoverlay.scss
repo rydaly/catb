@@ -1,0 +1,83 @@
+.comments-overlay {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  overflow: hidden;
+  background: rgba($base-bg-color, 0.75);
+}
+
+.vid-details {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  padding: 1.5em;
+  font-size: 0.9em;
+  font-weight: 400;
+  line-height: 1.8em;
+
+  span {
+    font-weight: 700;
+  }
+
+  .vid-title {
+    font-size: 1.2em;
+  }
+
+  .vid-stats {
+    font-weight: 100;
+
+    span {
+      font-weight: 400;
+    }
+  }
+
+  .vid-stats-views {
+    margin-right: 0.5em;
+  }
+
+  .vid-stats-dislikes,
+  .vid-stats-likes {
+    i {
+      margin-left: 0.5em;
+    }
+  }
+}
+
+.comment {
+  margin-bottom: 75px;
+
+  &.show {
+    @include animation(fadeIn 0.5s $ease-out-expo forwards);
+  }
+
+  &.hide {
+    @include animation(fadeOut 0.5s $ease-in-expo forwards);
+  }
+}
+@include keyframes(fadeIn) {
+  0% {
+    @include transform(translateY(15px));
+    opacity: 0;
+  }
+
+  100% {
+    @include transform(translateY(0));
+    opacity: 1;
+  }
+}
+@include keyframes(fadeOut) {
+  0% {
+    @include transform(translateY(0));
+    opacity: 1;
+  }
+
+  100% {
+    @include transform(translateY(-15px));
+    opacity: 0;
+  }
+}

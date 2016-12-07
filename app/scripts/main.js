@@ -2,6 +2,7 @@
 
 // TODO :: media queries | small screen comment box, avatar on top
 //      :: add 'view on YouTube' link and link to channels in video details
+//      :: add a stop button that will kill readback and video
 
 var catbSettings = {
   queryOptions: {

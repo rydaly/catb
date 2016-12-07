@@ -1,0 +1,51 @@
+.modal {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100vh;
+  z-index: 99;
+  color: #333;
+  background: rgba($base-bg-color, 0.75);
+  overflow: hidden;
+
+  p {
+    color: #333;
+  }
+}
+
+.modal-content {
+  text-align: center;
+  max-width: 800px;
+  margin: 10px;
+  padding: 25px;
+  border-radius: 10px;
+  background: rgba($base-font-color, 0.97);
+}
+
+.modal-copy-form {
+  margin-top: 1.1em;
+
+  input {
+    background: lighten($base-font-color, 1%);
+    border: 1px solid rgba($base-bg-color, 0.25);
+    color: $base-bg-color;
+    text-align: center;
+  }
+}
+
+button.close {
+  padding: 10px 25px;
+  text-transform: uppercase;
+  border: 1px solid #999;
+  font-size: 0.8em;
+  background: rgba($base-bg-color, 0);
+  cursor: pointer;
+  margin-top: 50px;
+  outline: none;
+
+  &:hover {
+    background: rgba($base-bg-color, 0.1);
+    @include transition(all 0.2s ease);
+  }
+}

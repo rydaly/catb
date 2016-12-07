@@ -14,7 +14,6 @@ var Catb = (function() {
     var _initDom = (function() {
       domEls.commentsOverlay = $('.comments-overlay');
       domEls.videoOverlay = $('.video-overlay');
-      // domEls.commentDiv = $('.comment');
     })();
 
     var _categoryMenu = $('.category-select'),

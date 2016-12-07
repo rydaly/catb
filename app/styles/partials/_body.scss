@@ -1,0 +1,42 @@
+.browserupgrade {
+  margin: 0.2em 0;
+  background: rgba($base-font-color, 0.97);
+  color: #333;
+  padding: 0.2em 0;
+}
+
+body {
+  background: $base-bg-color;
+  margin: 0;
+  padding: 0;
+}
+
+body,
+p {
+  font-family: 'Raleway', sans-serif;
+  color: rgba($base-font-color, 0.8);
+  font-weight: 300;
+  line-height: 1.6em;
+}
+
+a {
+  text-decoration: none;
+  font-weight: 300;
+  color: rgba($base-font-color, 0.7);
+  cursor: pointer;
+  @include transition(color 0.2s ease);
+
+  &:hover {
+    color: rgba($base-font-color, 0.97);
+  }
+}
+
+.show {
+  opacity: 1;
+  @include transition(opacity 0.5s $ease-in-out-sine);
+}
+
+.hide {
+  opacity: 0;
+  @include transition(opacity 0.5s $ease-in-out-sine);
+}
