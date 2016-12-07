@@ -23,7 +23,7 @@ var Modals = (function() {
     _modalContent.html(msg);
 
     if (_modalDiv.css('display') === 'none') {
-      _modalDiv.css({ 'display': 'flex', 'z-index': 9 });
+      _modalDiv.css({ 'display': 'flex', 'z-index': 99 });
       Catb.domEls.commentsOverlay.css('z-index', '-1');
     } else {
       _modalDiv.css({ 'display': 'none', 'z-index': -1 });

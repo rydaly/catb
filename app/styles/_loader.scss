@@ -1,0 +1,32 @@
+$spinner-size: 40px;
+$spinner-color: #E2C044;
+$spinner-thickness: 2px;
+$spinner-duration: 1s;
+
+.spinner {
+  @include size($spinner-size);
+  @include animation(spin $spinner-duration $ease-in-out-sine infinite);
+  border: $spinner-thickness solid transparent;
+  border-top-color: $spinner-color;
+  border-bottom-color: $spinner-color;
+  border-radius: 50%;
+}
+
+.text {
+  width: 100%;
+  text-align: center;
+  font-family: 'Roboto Mono', monospace;
+  position: absolute;
+  font-size: 10px;
+  margin-left: 1px;
+}
+
+@include keyframes(spin) {
+  0% {
+    @include transform(rotate(0));
+  }
+
+  100% {
+    @include transform(rotate(360deg));
+  }
+}

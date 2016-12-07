@@ -9,6 +9,10 @@ var YouTubePlayer = (function() {
   var _player = null,
     _playerDiv;
 
+  var videoStartedEvent = new CustomEvent('videoStarted', {
+    'detail': ''
+  });
+
   var initAPI = function() {
     var tag = document.createElement('script');
     tag.src = 'https://www.youtube.com/iframe_api';
@@ -55,12 +59,21 @@ var YouTubePlayer = (function() {
       }
 
       function onPlayerStateChange(e) {
-        if (e.data === YT.PlayerState.ENDED) {
-          e.target.playVideo(); // loop video
-        } else if (e.data === YT.PlayerState.PLAYING) {
-          Catb.domEls.commentsOverlay.css('display', 'flex');
-          _playerDiv.fadeIn('fast');
-          // TODO :: dispatch event here to start readback in SpeechSynth
+        switch (e.data) {
+          case YT.PlayerState.BUFFERING :
+            _player.isBuffered = false;
+            break;
+          case YT.PlayerState.PLAYING :
+            // will not fire when video loops
+            if(!_player.isBuffered) {
+              _player.isBuffered = true;
+              showPlayer();
+              window.dispatchEvent(videoStartedEvent);
+            }
+            break;
+          case YT.PlayerState.ENDED :
+            e.target.seekTo(0);
+            break;
         }
       }
 
@@ -70,6 +83,18 @@ var YouTubePlayer = (function() {
 
     });
 
+  };
+
+  var showPlayer = function() {
+    _playerDiv.addClass('show').removeClass('hide');
+    Catb.domEls.commentsOverlay.addClass('show').removeClass('hide');
+    Catb.domEls.videoOverlay.addClass('hide').removeClass('show');
+  };
+
+  var hidePlayer = function() {
+    _playerDiv.addClass('hide').removeClass('show');
+    Catb.domEls.commentsOverlay.addClass('hide').removeClass('show');
+    Catb.domEls.videoOverlay.addClass('show').removeClass('hide');
   };
 
   var loadVideo = function(id) {
@@ -87,6 +112,8 @@ var YouTubePlayer = (function() {
   return {
     initAPI: initAPI,
     initPlayer: initPlayer,
+    hidePlayer: hidePlayer,
+    showPlayer: showPlayer,
     loadVideo: loadVideo,
     playVideo: playVideo,
     stopVideo: stopVideo

@@ -56,6 +56,7 @@ var YouTubeData = (function() {
       'detail': catbSettings.currentVid
     });
 
+    YouTubePlayer.hidePlayer();
     SpeechSynth.cancelReadback();
 
     switch (queryType) {

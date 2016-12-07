@@ -1,7 +1,6 @@
 // some yt ids :: HimvFbossU8 6lIqNjC1RKU EFo84MVbVQ8
 
 // TODO :: media queries | small screen comment box, avatar on top
-//      :: clean up app initial load. Fade in, etc...
 //      :: add 'view on YouTube' link and link to channels in video details
 
 var catbSettings = {
@@ -64,11 +63,17 @@ $(document).ready(function() {
   };
 
   var onCommentsReady = function(e) {
-    console.log(catbSettings.previousVid, catbSettings.currentVid);
+    // console.log(catbSettings.previousVid, catbSettings.currentVid);
     // we're good to go, let's do this thing!
     SpeechSynth.cancelReadback();
     CatbRouter.setHash(catbSettings.currentVid);
     YouTubePlayer.loadVideo(catbSettings.currentVid);
+
+    // wait for video to play
+    window.addEventListener('videoStarted', onVideoStarted, false);
+  };
+
+  var onVideoStarted = function(e) {
     SpeechSynth.startReadback();
   };
 
