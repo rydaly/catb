@@ -13,7 +13,7 @@
 
     <!-- build:css styles/vendor.css -->
     <!-- bower:css -->
-    <link rel="stylesheet" href="/bower_components/components-font-awesome/css/font-awesome.css"/>
+    <link rel="stylesheet" href="/bower_components/components-font-awesome/css/font-awesome.css" />
     <!-- endbower -->
     <!-- endbuild -->
 
@@ -52,6 +52,7 @@
       <div class="spinner-text">LOL</div>
     </div>
 
+    <!-- Comments and details overlay -->
     <div class="comments-overlay hide">
 
       <div class="comment hide">
@@ -85,8 +86,9 @@
       </div>
 
     </div>
-    <!-- End overlay -->
+    <!-- End comments and details overlay -->
 
+    <!-- Menu -->
     <div class="menu-toggle-btn"></div>
     <menu class="menu">
       <div class="menu-logo">
@@ -123,7 +125,7 @@
       <div>
         <form class="menu-id-form">
           <label>Manual ID •
-            <small>returns video with matching id</small>
+            <small>returns the video with matching id</small>
           </label>
           <input class="menu-input" id="menu-id-input" name="menu-id-input">
           <input type="submit" value="GO!">
@@ -139,22 +141,23 @@
 
       <div>
         <label>About</label>
-        <p class="menu-about">CATB utilizes the
-          <a href="https://developers.google.com/youtube/v3/" alt="YouTube Data API">YouTube Data API</a>
-          to grab videos and retrieve commentary. While the video plays in the background, the comments are then read back, in order, using the
-          <a href="https://developers.google.com/web/updates/2014/01/Web-apps-that-talk-Introduction-to-the-Speech-Synthesis-API" alt="Speech Synthesis API">Speech Synthesis API</a>. The result is either hilarious or super annoying... I'm not sure yet. Kick back and enjoy the commentary! \m/</p>
+        <p class="menu-about">
+          I always find it entertaining reading through comments around the web, especially when the subject matter gets a little controversial. This novelty app is essentially a robot that vocalizes the musings and opinions of YouTube users, removing any emotion in the messages with its monotonous voices. It utilizes <a href="https://developers.google.com/youtube/iframe_api_reference" alt="YouTube Player API">YouTube Player</a>, <a href="https://developers.google.com/youtube/v3/" alt="YouTube Data API">YouTube Data</a> and <a href="https://dvcs.w3.org/hg/speech-api/raw-file/tip/speechapi.html" alt="Speech Synthesis API">Speech Synthesis</a> APIs to fetch and read back comments from videos. The original idea for this project was ultra simple but, ya know, things escalated quickly and I'm still trying to figure out if it's funny or just plain annoying =) Kick back and enjoy the commentary!
+        </p>
         <p class="menu-about">Built for shits by
           <a href="http://rydaly.com" alt="rydaly.com">Ryan Daly</a>
         </p>
       </div>
 
     </menu>
+    <!-- End menu -->
 
     <div class="modal">
       <div class="modal-content">
         <h1 class="modal-header"></h1>
         <p class="modal-words"></p>
-        <button class="close">Onward</button>
+        <a class="modal-link-btn" target="_blank">View on YouTube</a>
+        <button class="modal-close">Gotcha</button>
       </div>
     </div>
 

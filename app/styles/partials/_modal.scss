@@ -34,10 +34,11 @@
   }
 }
 
-button.close {
+.modal-link-btn, .modal-close {
   padding: 10px 25px;
   text-transform: uppercase;
-  border: 1px solid #999;
+  color: $base-bg-color;
+  border: 1px solid rgba($base-bg-color, 0.25);
   font-size: 0.8em;
   background: rgba($base-bg-color, 0);
   cursor: pointer;
@@ -46,6 +47,26 @@ button.close {
 
   &:hover {
     background: rgba($base-bg-color, 0.1);
+    color: $base-bg-color;
     @include transition(all 0.2s ease);
+  }
+}
+
+.modal-link-btn {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 0.7em;
+  display: block;
+  width: 50%;
+  margin: 0 auto;
+  padding: 12px 0 10px 0;
+  border: none;
+
+  &:before {
+    content: '\f16a';
+    font-family: FontAwesome;
+    font-size: 1.4em;
+    display: inline-block;
+    vertical-align: middle;
+    margin: 0 6px 1px;
   }
 }
