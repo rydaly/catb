@@ -15,9 +15,9 @@ var YouTubePlayer = (function() {
 
   var initAPI = function() {
     var tag = document.createElement('script');
-    tag.src = 'https://www.youtube.com/iframe_api';
+      tag.src = 'https://www.youtube.com/iframe_api';
     var firstScriptTag = document.getElementsByTagName('script')[0];
-    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
   };
 
   var initPlayer = function() {
@@ -28,15 +28,16 @@ var YouTubePlayer = (function() {
         height: '720',
         videoId: catbSettings.currentVid, // defaults to app setting
         playerVars: {
-          'controls': 0,
-          'disablekb': 1,
-          'enablejsapi': 1,
-          'fs': 0,
-          'loop': 1,
-          'modestbranding': 1,
-          'playsinline': 1,
-          'showinfo': 0,
-          'showsearch': 0
+          autoplay: 1,
+          controls: 0,
+          disablekb: 1,
+          enablejsapi: 1,
+          fs: 0,
+          modestbranding: 1,
+          origin: 'http://rydaly.com/',
+          playsinline: 1,
+          showinfo: 0,
+          wmode: 'transparent'
         },
         events: {
           'onReady': onPlayerReady,

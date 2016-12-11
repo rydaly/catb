@@ -21,10 +21,10 @@
   height: 100%;
 }
 
-.video-foreground {
-  background-size: cover;
-  background-position: center;
-}
+// .video-foreground {
+//   background-size: cover;
+//   background-position: center;
+// }
 
 iframe {
   overflow: hidden;
@@ -32,9 +32,9 @@ iframe {
 
 .video-overlay {
   @include position(absolute, 0 0 0 0);
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  @include display(flex);
+  @include align-items(center);
+  @include justify-content(center);
   background-color: $base-bg-color;
   pointer-events: none;
   z-index: -1;

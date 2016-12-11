@@ -13,12 +13,10 @@ $spinner-duration: 1s;
 }
 
 .spinner-text {
-  width: 100%;
-  text-align: center;
   font-family: 'Roboto Mono', monospace;
-  position: absolute;
   font-size: 10px;
   margin-left: 1px;
+  @include transform(translate(-29px, 0));
 }
 @include keyframes(spin) {
   0% {

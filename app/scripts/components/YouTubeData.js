@@ -40,10 +40,13 @@ var YouTubeData = (function() {
         }
 
         d.resolve('Categories Ready');
+      }, function(error) {
+        Modals.toggleModal('Error getting categories from YouTube API!');
       });
 
     }, function(error) {
-      console.log('error :: ' + error.result.error.message);
+      Modals.toggleModal('Error initializing YouTube client!');
+      // console.log('error :: ' + error.result.error.message);
       d.reject('Categories Error');
     });
 
@@ -70,7 +73,11 @@ var YouTubeData = (function() {
           catbSettings.setCurrent(Playlist.getCurrent()[0].id.videoId);
           _doIdQuery().then(function(results) {
             postQuerySetup(results);
+          }, function(error) {
+            Modals.toggleModal('Error getting id query from YouTube API!');
           });
+        }, function(error) {
+          Modals.toggleModal('Error getting search query from YouTube API!');
         });
         modalMsg = 'Looks like that query returned an empty set. Try something else!';
         break;
@@ -78,6 +85,8 @@ var YouTubeData = (function() {
         _doIdQuery().then(function(results) {
           // console.log(results);
           postQuerySetup(results);
+        }, function(error) {
+          Modals.toggleModal('Error getting id query from YouTube API!');
         });
         modalMsg = 'Looks like that YouTube ID didn\'t match anything. Check the ID and try again!';
         break;
@@ -88,6 +97,8 @@ var YouTubeData = (function() {
             catbSettings.setCurrent(Playlist.getCurrent()[0].id.videoId);
           }
           postQuerySetup(results);
+        }, function(error) {
+          Modals.toggleModal('Error getting category query from YouTube API!');
         });
         modalMsg = 'Looks like that category returned an empty set. Try something else!';
         break;
@@ -107,8 +118,14 @@ var YouTubeData = (function() {
             catbSettings.setCurrent(Playlist.getCurrent()[0].id.videoId);
             _doIdQuery().then(function(results) {
               postQuerySetup(results);
+            }, function(error) {
+              Modals.toggleModal('Error getting id query from YouTube API!');
             });
+          }, function(error) {
+            Modals.toggleModal('Error getting channel query from YouTube API!');
           });
+        }, function(error) {
+          Modals.toggleModal('Error getting channel search query from YouTube API!');
         });
         modalMsg = 'Looks like that query returned an empty set. Try something else!';
         break;
@@ -156,6 +173,8 @@ var YouTubeData = (function() {
 
       _fetchComments().then(function(result) {
         window.dispatchEvent(commentsReadyEvent);
+      }, function(error) {
+        Modals.toggleModal('Error getting comments from YouTube API!');
       });
     }
   }

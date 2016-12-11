@@ -36,8 +36,15 @@ var SpeechSynth = (function() {
 
     if (catbSettings.hasSpeechSynth) {
 
-      // make sure speechSynthesis has initialized in browser before populating
-      window.speechSynthesis.onvoiceschanged = function() {
+      if('onvoiceschanged' in speechSynthesis) {
+        // make sure speechSynthesis has initialized in browser before populating
+        window.speechSynthesis.onvoiceschanged = handleVoicesChanged();
+      } else {
+        // safari doesn't have onvoiceschanged event...
+        handleVoicesChanged();
+      }
+
+      function handleVoicesChanged() {
         var allVoices = window.speechSynthesis.getVoices();
 
         for (var i = 0; i < allVoices.length; i++) {

@@ -20,8 +20,6 @@ var CatbRouter = (function() {
   };
 
   var setHash = function(val) {
-    console.log('setting hash :: ', val);
-
     // don't set if same as current
     if(catbSettings.previousVid === catbSettings.currentVid) {
       return;
