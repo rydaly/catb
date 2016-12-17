@@ -170,6 +170,9 @@ small {
 }
 
 .menu-about {
+  line-height: 2em;
+  font-weight: 400;
+
   a {
     border-bottom: 1px solid rgba($base-font-color, 0.5);
     @include transition(all 0.2s ease);
